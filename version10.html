@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WEXMAC · LOGCAP V · EAGLE II BOA — Global Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#ffffff;--surface:#f7f7f7;--elevated:#eeeeee;--card:#f9f9f9;
+  --border:rgba(0,0,0,0.10);--border-hi:rgba(0,0,0,0.18);
+  --text:#0a0a0a;--muted:#555555;--dim:#cccccc;
+  --blue:#0a0a0a;--blue-dim:rgba(0,0,0,0.04);--blue-border:rgba(0,0,0,0.15);
+  --amber:#0a0a0a;--logcap:#0a0a0a;--eagle:#0a0a0a;
+  --purple:#333333;--green:#1a6640;--orange:#8a3a00;--red:#8a0000;
+  --teal:#1a5a60;--teal-dim:rgba(0,0,0,0.03);--teal-border:rgba(0,0,0,0.12);
+  --wexmac:#0a0a0a;
+  --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;
+}
+
+.gcc-nav{background:#f7f7f7;border-bottom:1px solid #e0e0e0;display:flex;align-items:center;padding:0 16px;gap:0;overflow-x:auto;height:36px;flex-shrink:0}
+.nav-gcc{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:0 12px;height:100%;display:inline-flex;align-items:center;border-bottom:2px solid transparent;white-space:nowrap;flex-shrink:0;transition:color .15s;text-decoration:none;cursor:pointer}
+.nav-gcc:hover{color:var(--text)}
+.nav-gcc.active{border-bottom-color:#000000;color:#000000;font-weight:500}
+.gcc-nav-meta{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);margin-left:auto;white-space:nowrap;padding-left:12px}
+.tab-btn{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#555555;padding:0 14px;cursor:pointer;height:100%;border:none;background:none;border-bottom:2px solid transparent;white-space:nowrap;flex-shrink:0;transition:color .15s}
+.tab-btn:hover{color:#000000}
+.tab-btn.active-tab{border-bottom-color:#000000;color:#000000}
+#panel-map{display:block}
+#panel-intel{display:none}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+html,body{height:100%;font-family:var(--sans);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+body{overflow-x:hidden}
+
+/* NAV */
+.top-nav{position:sticky;top:0;z-index:1000;background:rgba(8,11,18,.97);backdrop-filter:blur(10px);border-bottom:.5px solid var(--border-hi);display:flex;align-items:center;padding:0 16px;gap:0;overflow-x:auto;height:46px;flex-shrink:0}
+.nav-brand{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding-right:12px;border-right:.5px solid var(--border-hi);margin-right:10px;white-space:nowrap;flex-shrink:0;line-height:1.3}
+.nav-brand span{display:block}
+.nav-brand span:nth-child(1){color:var(--wexmac)}
+.nav-brand span:nth-child(2){color:var(--logcap)}
+.nav-brand span:nth-child(3){color:var(--eagle)}
+.nav-tab{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:#555555;padding:0 12px;cursor:pointer;height:100%;display:flex;align-items:center;border-bottom:2px solid transparent;white-space:nowrap;flex-shrink:0;transition:color .15s;text-decoration:none}
+.nav-tab:hover{color:#0a0d16}
+.nav-tab.active{border-bottom-color:var(--tab-color,var(--amber));color:var(--tab-color,var(--amber))}
+.nav-spacer{flex:1}
+.nav-meta{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap}
+
+/* PROGRAM HEADER */
+.prog-header{background:#ffffff;border-bottom:1px solid #e0e0e0;padding:18px 32px}
+.ph-title{font-size:24px;font-weight:300;margin-bottom:4px;letter-spacing:-.01em}
+.ph-title .w{color:#000000;font-weight:600}
+.ph-title .l{color:#333333;font-weight:600}
+.ph-title .e{color:#555555;font-weight:600}
+.ph-sub{font-family:var(--mono);font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7}
+.ph-stats{display:flex;gap:20px;flex-wrap:wrap}
+.ph-stat-label{font-family:var(--mono);font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:2px}
+.ph-stat-value{font-size:16px;font-weight:500}
+
+/* SECTION */
+.gcc-section{display:flex;flex-direction:row;border-bottom:1px solid #e0e0e0}
+@media(max-width:899px){.gcc-section{flex-direction:column}}
+
+/* MAP */
+.map-wrap{flex:1;position:relative;background:#ffffff;min-height:100vh;height:100vh;overflow:hidden;align-self:stretch}
+@media(max-width:899px){.map-wrap{min-height:70vw;height:70vw}}
+.map-wrap svg{position:absolute;top:0;left:0;width:100%;height:100%;display:block}
+.map-loading{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--mono);font-size:13px;color:var(--muted)}
+.map-badge{position:absolute;top:10px;left:10px;background:rgba(255,255,255,.97);border:1px solid #e0e0e0;border-radius:6px;padding:7px 11px;pointer-events:none}
+.mb-gcc{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:2px}
+.mb-name{font-size:18px;font-weight:500}
+.mb-sub{font-size:14px;color:var(--muted);margin-top:1px}
+.zoom-controls{position:absolute;top:10px;right:10px;display:flex;flex-direction:column;gap:4px}
+.zoom-btn{width:26px;height:26px;background:#ffffff;border:1px solid #e0e0e0;border-radius:2px;color:var(--text);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;user-select:none}
+.zoom-btn:hover{background:#f0f0f0}
+.map-legend{position:absolute;bottom:10px;left:10px;background:rgba(255,255,255,.95);border:1px solid rgba(0,87,255,0.25);border-radius:6px;padding:8px 11px;display:flex;flex-direction:column;gap:5px;pointer-events:none}
+.leg{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:13px;color:var(--text)}
+.leg-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.leg-diamond{width:8px;height:8px;transform:rotate(45deg);flex-shrink:0}
+
+/* TOOLTIP */
+.tip{position:absolute;background:#ffffff;border:1px solid #e0e0e0;border-radius:7px;padding:10px 12px;pointer-events:none;opacity:0;transition:opacity .12s;max-width:300px;max-height:280px;overflow-y:auto;z-index:200;box-shadow:0 8px 30px rgba(0,0,0,.7);font-size:14px;bottom:auto}
+.tip.show{opacity:1}
+.tip-name{font-size:14px;font-weight:500;margin-bottom:2px}
+.tip-sub{font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:5px}
+.tip-row{display:flex;align-items:flex-start;gap:5px;padding:2px 0}
+.tip-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.tip-recomp{margin-top:5px;padding:3px 7px;background:#faf7f5;border:.5px solid #d0a888;border-radius:0;font-family:var(--mono);font-size:11px;color:#8a3a00}
+.tip-conf{margin-top:5px;padding:3px 7px;background:#f5faf7;border:.5px solid #a0d0b0;border-radius:0;font-family:var(--mono);font-size:11px;color:#1a6640}
+
+/* SIDEBAR */
+.sidebar{width:360px;flex-shrink:0;background:#f7f7f7;border-left:1px solid #e0e0e0;display:flex;flex-direction:column;position:sticky;top:46px;align-self:flex-start;max-height:calc(100vh - 46px);overflow:hidden}
+@media(max-width:899px){.sidebar{width:100%;position:static;max-height:none;border-left:none;border-top:.5px solid var(--border)}}
+.sb-head{padding:12px 14px 10px;border-bottom:1px solid rgba(0,0,0,0.08);flex-shrink:0}
+.sb-gcc{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:4px}
+.sb-title{font-size:18px;font-weight:500}
+.sb-sub{font-size:14px;color:var(--muted);margin-top:2px;font-family:var(--mono)}
+.sb-filters{padding:8px 12px;border-bottom:1px solid rgba(0,0,0,0.08);flex-shrink:0;display:flex;gap:6px;flex-wrap:wrap}
+.fg{display:flex;flex-direction:column;gap:3px;flex:1;min-width:90px}
+.fl{font-family:var(--mono);font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--dim)}
+input[type=text],select{width:100%;background:#ffffff;border:1px solid #cccccc;border-radius:4px;color:var(--text);font-family:var(--sans);font-size:13px;padding:5px 8px;outline:none;-webkit-appearance:none}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%2368748f'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 7px center;padding-right:20px}
+input:focus,select:focus{border-color:#000000}
+.sb-stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid rgba(0,0,0,0.08);flex-shrink:0}
+.stat{padding:7px 8px;border-right:1px solid rgba(0,0,0,0.06)}
+.stat:last-child{border-right:none}
+.stat-v{font-size:18px;font-weight:300}
+.stat-l{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-top:1px}
+.sb-list{flex:1;overflow-y:auto}
+.sb-list::-webkit-scrollbar{width:3px}
+.sb-list::-webkit-scrollbar-thumb{background:#cbd5e0}
+.loc-item{padding:10px 12px;border-bottom:1px solid rgba(0,0,0,0.06);cursor:pointer;transition:background .1s}
+.loc-item:hover{background:#f0f0f0}
+.loc-item.active{background:#eeeeee;border-left:2px solid #000000;padding-left:10px}
+.li-name{font-size:16px;font-weight:500;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.li-meta{font-family:var(--mono);font-size:13px;color:var(--muted);margin-top:2px}
+.li-tags{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px}
+.tag{display:inline-flex;align-items:center;gap:3px;font-family:var(--mono);font-size:12px;font-weight:500;padding:2px 6px;border-radius:99px}
+.tag-dot{width:4px;height:4px;border-radius:50%}
+.t-wexmac{background:#f0f0f0;color:#333333}
+.t-wexmac .tag-dot{background:#555555}
+.t-logcap{background:#f0f0f0;color:#333333}
+.t-logcap .tag-dot{background:#555555}
+.t-eagle{background:#f0f0f0;color:#333333}
+.t-eagle .tag-dot{background:#333333}
+.recomp-pill{font-family:var(--mono);font-size:12px;padding:1px 6px;border-radius:0;background:#fff0ee;color:#8a3a00;border:.5px solid #e0b0a0;white-space:nowrap}
+.conf-pill{font-family:var(--mono);font-size:12px;padding:1px 6px;border-radius:0;background:#f0f0f0;color:#333333;border:.5px solid #cccccc}
+.new-pill{font-family:var(--mono);font-size:12px;padding:1px 6px;border-radius:0;background:#f0f0f0;color:#000000;border:.5px solid #cccccc}
+
+/* DETAIL PANEL */
+.detail{position:absolute;right:0;top:0;bottom:0;width:300px;background:#ffffff;border-left:1px solid #e0e0e0;transform:translateX(100%);transition:transform .22s ease;overflow-y:auto;z-index:150;padding:14px}
+.detail.open{transform:translateX(0)}
+.det-close{position:absolute;top:10px;right:10px;background:none;border:.5px solid var(--border-hi);color:var(--muted);font-size:14px;width:22px;height:22px;border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.det-close:hover{color:var(--text)}
+.det-name{font-size:18px;font-weight:500;margin-bottom:2px;padding-right:28px;line-height:1.3}
+.det-meta{font-family:var(--mono);font-size:13px;color:var(--muted);margin-bottom:10px;line-height:1.6}
+.det-banner{margin-bottom:12px;padding:8px 10px;border-radius:5px}
+.det-banner-title{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+.det-banner-body{font-size:16px;color:var(--text);line-height:1.5}
+.det-recomp{background:#faf7f5;border:.5px solid #d0a888}
+.det-recomp .det-banner-title{color:#8a3a00}
+.det-confirmed{background:#f5faf7;border:.5px solid #a0d0b0}
+.det-confirmed .det-banner-title{color:#1a6640}
+.det-logcap{background:#f7f5fa;border:.5px solid #c0a8e0}
+.det-logcap .det-banner-title{color:#4a2a70}
+.det-sec{margin-bottom:12px}
+.det-sec-h{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#a0aec0;border-bottom:1px solid rgba(0,0,0,0.08);padding-bottom:3px;margin-bottom:8px}
+.det-row{padding:7px 0;border-bottom:1px solid rgba(0,0,0,0.06)}
+.det-row:last-child{border-bottom:none}
+.det-cname{font-size:16px;font-weight:500;margin-bottom:2px}
+.det-label{font-family:var(--mono);font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px}
+.det-value{font-size:16px;color:var(--text);line-height:1.5}
+.no-results{padding:28px 12px;text-align:center;font-family:var(--mono);font-size:12px;color:#a0aec0}
+.intel-link{display:flex;align-items:center;gap:7px;margin:10px 12px 4px;padding:8px 10px;background:#f0f0f0;border:1px solid #cccccc;border-radius:0;font-family:var(--mono);font-size:11px;color:#000000;text-decoration:none;letter-spacing:.06em;transition:background .15s;flex-shrink:0}
+.intel-link:hover{background:rgba(0,87,255,0.10)}
+.intel-link::before{content:'↗';font-size:13px}
+
+/* SVG ANIMATIONS */
+.country-fill{fill:#e8e8e8;stroke:#cccccc;stroke-width:.4}
+.state-fill{fill:#e4e4e4;stroke:#cccccc;stroke-width:.5}
+.mesh{fill:none;stroke:#cccccc;stroke-width:.4}
+@keyframes ra{0%{r:6;opacity:.9}100%{r:26;opacity:0}}
+@keyframes rb{0%{r:6;opacity:.55}100%{r:18;opacity:0}}
+@keyframes rc{0%{r:6;opacity:.25}100%{r:12;opacity:0}}
+.ring1{fill:none;stroke-width:2;animation:ra 2.4s ease-out infinite}
+.ring2{fill:none;stroke-width:1.5;animation:rb 2.4s ease-out infinite .65s}
+.ring3{fill:none;stroke-width:1;animation:rc 2.4s ease-out infinite 1.2s}
+@keyframes recomp-p{0%{r:8;opacity:.9}100%{r:32;opacity:0}}
+@keyframes recomp-p2{0%{r:8;opacity:.4}100%{r:20;opacity:0}}
+.ring-recomp{fill:none;stroke-width:2;stroke-dasharray:5,3;animation:recomp-p 3s ease-out infinite}
+.ring-recomp2{fill:none;stroke-width:1.5;stroke-dasharray:3,4;animation:recomp-p2 3s ease-out infinite .9s}
+@keyframes logcap-r{0%{r:8;opacity:.8}100%{r:30;opacity:0}}
+@keyframes logcap-r2{0%{r:8;opacity:.4}100%{r:20;opacity:0}}
+.ring-lc1{fill:none;stroke-width:2;stroke-dasharray:4,3;animation:logcap-r 3s ease-out infinite}
+.ring-lc2{fill:none;stroke-width:1.5;stroke-dasharray:3,4;animation:logcap-r2 3s ease-out infinite .9s}
+@keyframes new-aw{0%{r:6;opacity:1}50%{r:20;opacity:.3}100%{r:6;opacity:1}}
+.ring-new{fill:none;stroke-width:2;stroke-dasharray:3,2;animation:new-aw 1.8s ease-in-out infinite}
+.loc-g{cursor:pointer}
+.loc-label{font-family:'IBM Plex Mono',monospace;font-size:14px;fill:#2a3a5a;pointer-events:none}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh}
+
+/* ── TOP BAR ── */
+.topbar{position:sticky;top:0;z-index:100;background:rgba(7,9,14,.95);backdrop-filter:blur(10px);border-bottom:.5px solid var(--border-hi);display:flex;align-items:center;gap:0;padding:0 20px;height:44px}
+.tb-back{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#000000;text-decoration:none;display:flex;align-items:center;gap:6px;border-right:.5px solid var(--border-hi);padding-right:14px;margin-right:14px;white-space:nowrap;transition:opacity .15s}
+.tb-back:hover{opacity:.7}
+.tb-back::before{content:'←';font-size:14px}
+.tb-crumb{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.tb-crumb span{color:#000000;font-weight:500}
+.tb-spacer{flex:1}
+.tb-stamp{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;border:.5px solid var(--border-hi);padding:3px 8px;border-radius:3px}
+
+/* ── HERO ── */
+.hero{position:relative;overflow:hidden;padding:52px 0 44px;border-bottom:1px solid #e0e0e0}
+.hero-bg{position:absolute;inset:0;background:none;display:none 0%,transparent 70%),radial-gradient(ellipse 40% 60% at 80% 80%,rgba(240,112,64,0.04) 0%,transparent 60%);pointer-events:none}
+.hero-inner{max-width:1100px;margin:0 auto;padding:0 32px;position:relative}
+.hero-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#555555;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.hero-eyebrow::before{content:'';display:block;width:20px;height:1px;background:#000000}
+.hero-title{font-size:clamp(26px,4vw,40px);font-weight:300;line-height:1.15;letter-spacing:-.01em;margin-bottom:10px}
+.hero-title strong{font-weight:600;color:#000000}
+.hero-sub{font-size:17px;color:var(--muted);line-height:1.7;max-width:640px;font-weight:300}
+.hero-meta{display:flex;gap:20px;margin-top:20px;flex-wrap:wrap}
+.hero-stat{display:flex;flex-direction:column;gap:3px}
+.hero-stat-v{font-family:var(--mono);font-size:22px;font-weight:500}
+.hero-stat-l{font-family:var(--mono);font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+
+/* ── LAYOUT ── */
+.page{max-width:1100px;margin:0 auto;padding:0 32px 80px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:800px){.grid-2,.grid-3{grid-template-columns:1fr}}
+
+/* ── SECTION HEADERS ── */
+.sec{margin-top:48px}
+.sec-head{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:10px;border-bottom:.5px solid var(--border-hi)}
+.sec-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:#555555;border:1px solid #cccccc;padding:2px 7px;border-radius:0;white-space:nowrap}
+.sec-title{font-size:19px;font-weight:400;color:var(--text)}
+.sec-meta{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:auto}
+
+/* ── CARDS ── */
+.card{background:#f9f9f9;border:none;border-left:2px solid #000000;padding:18px 20px;transition:border-left-color .15s}
+.card:hover{border-left-color:#000000}
+.card-label{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.card-title{font-size:17px;font-weight:500;margin-bottom:6px;line-height:1.4}
+.card-body{font-size:16px;color:var(--muted);line-height:1.7}
+
+/* ── THREAT TIER CARDS ── */
+.tier-card{border-radius:6px;padding:16px 18px;border-left:3px solid}
+.tier-1{background:#faf5f5;border-color:var(--red)}
+.tier-2{background:#faf7f5;border-color:var(--orange)}
+.tier-3{background:#f5f7fa;border-color:#333333}
+.tier-label{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px}
+.tier-1 .tier-label{color:#8a0000}
+.tier-2 .tier-label{color:#8a3a00}
+.tier-3 .tier-label{color:#333333}
+.tier-name{font-size:17px;font-weight:500;margin-bottom:5px}
+.tier-body{font-size:16px;color:var(--muted);line-height:1.7}
+
+/* ── QUOTE BLOCK ── */
+.quote{background:#f7f7f7;border-left:3px solid #000000;border-top:none;border-right:none;border-bottom:none;border-radius:6px;padding:18px 22px;position:relative;margin:6px 0}
+.quote::before{content:'"';position:absolute;top:8px;left:14px;font-size:43px;color:#000000;opacity:.12;font-family:Georgia,serif;line-height:1}
+.quote-text{font-size:17px;line-height:1.75;color:var(--text);padding-left:12px;font-style:italic;font-weight:300}
+.quote-attr{font-family:var(--mono);font-size:11px;color:#555555;margin-top:8px;padding-left:12px;letter-spacing:.06em}
+
+/* ── COUNTRY ROWS ── */
+.country-table{width:100%;border-collapse:collapse;font-size:13px}
+.country-table th{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:#4a5568;text-align:left;padding:6px 10px;border-bottom:1px solid rgba(0,0,0,0.12)}
+.country-table td{padding:9px 10px;border-bottom:.5px solid var(--border);vertical-align:top;line-height:1.6;font-size:16px}
+.country-table tr:last-child td{border-bottom:none}
+.country-table tr:hover td{background:#f7f7f7}
+.coop-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;vertical-align:middle;flex-shrink:0}
+.coop-high{background:var(--green)}
+.coop-med{background:var(--amber)}
+.coop-low{background:var(--orange)}
+.coop-none{background:var(--red)}
+.country-name{font-weight:500;color:var(--text)}
+.pill{display:inline-block;font-family:var(--mono);font-size:10px;padding:1px 6px;border-radius:99px;margin-right:3px;margin-bottom:2px;white-space:nowrap}
+.pill-fto{background:#faf5f5;color:#8a0000;border:.5px solid #e0b0b0}
+.pill-cn{background:#f5f5fa;color:#333399;border:.5px solid #c0c0e0}
+.pill-drug{background:#faf8f5;color:#6a4400;border:.5px solid #e0d0b0}
+.pill-mig{background:#f8f5fa;color:#4a2a70;border:.5px solid #c8b0e0}
+.pill-wexmac{background:#faf7f5;color:#7a3000;border:.5px solid #d0b0a0}
+
+/* ── CONTRACTOR TABLE ── */
+.contract-row{display:grid;grid-template-columns:160px 1fr 100px 90px;gap:0;border-bottom:1px solid rgba(0,0,0,0.06);padding:10px 0;align-items:start}
+.contract-row:last-child{border-bottom:none}
+.cr-firm{font-size:16px;font-weight:500;color:#000000;padding-right:12px}
+.cr-role{font-size:16px;color:var(--muted);line-height:1.6;padding-right:12px}
+.cr-vehicle{font-family:var(--mono);font-size:11px;color:var(--amber)}
+.cr-status{font-family:var(--mono);font-size:11px}
+.cr-status.active{color:var(--green)}
+.cr-status.new{color:#f0f0c0}
+
+/* ── SIGNAL BLOCKS ── */
+.signal{background:#f7f7f7;border:1px solid #e0e0e0;border-radius:6px;padding:16px 18px}
+.signal-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.signal-icon{width:24px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.sig-red{background:#faf5f5}
+.sig-amber{background:#faf8f5}
+.sig-teal{background:#f5f7fa}
+.signal-title{font-size:17px;font-weight:500}
+.signal-body{font-size:16px;color:var(--muted);line-height:1.7}
+.signal-body strong{color:var(--text);font-weight:500}
+
+/* ── POSTURE SITES ── */
+.site-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.site-card{background:#f5f7fa;border:1px solid rgba(0,0,0,0.08);border-radius:5px;padding:12px 14px}
+.site-name{font-size:16px;font-weight:500;margin-bottom:3px}
+.site-country{font-family:var(--mono);font-size:11px;color:#555555;margin-bottom:5px}
+.site-role{font-size:14px;color:var(--muted);line-height:1.6}
+.site-new{border-color:#cccccc;border-left:2px solid #000000;background:#f7f7f7}
+.site-new .site-country{color:#000000;font-weight:500}
+
+/* ── TIMELINE ── */
+.timeline{display:flex;flex-direction:column;gap:0}
+.tl-item{display:grid;grid-template-columns:90px 1fr;gap:14px;padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.06)}
+.tl-item:last-child{border-bottom:none}
+.tl-date{font-family:var(--mono);font-size:11px;color:#555555;padding-top:2px;white-space:nowrap}
+.tl-content{}
+.tl-title{font-size:16px;font-weight:500;margin-bottom:3px}
+.tl-body{font-size:16px;color:var(--muted);line-height:1.6}
+
+/* ── FOOTER LINK ── */
+.back-link{display:inline-flex;align-items:center;gap:8px;margin-top:48px;font-family:var(--mono);font-size:12px;color:#000000;text-decoration:none;border:1px solid #000000;padding:8px 14px;border-radius:0;transition:background .15s}
+.back-link:hover{background:#f0f0f0}
+
+/* ── DIVIDER ── */
+.divider{height:1px;background:#e0e0e0;margin:40px 0}
+
+@media(max-width:600px){
+  .hero-inner,.page{padding-left:16px;padding-right:16px}
+  .contract-row{grid-template-columns:1fr;gap:3px}
+}
+html,body{height:100%;font-family:var(--sans);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+body{overflow-x:hidden}
+</style>
+</head>
+<body>
+<div id="tab-nav" style="position:sticky;top:0;z-index:200;background:#ffffff;border-bottom:1px solid #e0e0e0;display:flex;align-items:center;height:46px;padding:0 16px;gap:0">
+  <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding-right:12px;border-right:.5px solid rgba(255,255,255,0.13);margin-right:12px;flex-shrink:0;line-height:1.3">
+    <span style="color:#f0c040;display:block">WEXMAC</span>
+    <span style="color:#f0a830;display:block">LOGCAP V</span>
+    <span style="color:#4d82ff;display:block">EAGLE II BOA</span>
+  </div>
+  <button onclick="showTab('map')"   id="tab-btn-map"   class="tab-btn active-tab">Global Map</button>
+  <button onclick="showTab('intel')" id="tab-btn-intel" class="tab-btn">SOUTHCOM Intel Brief</button>
+  <div style="flex:1"></div>
+  <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#c8d4e8;white-space:nowrap">WEXMAC · LOGCAP V · EAGLE II BOA · scroll to zoom · drag to pan</div>
+</div>
+<div id="panel-map">
+<nav class="gcc-nav">
+  <a class="nav-gcc nav-tab active" href="#northcom" style="--tab-color:#38bdf8">NORTHCOM</a>
+  <a class="nav-gcc nav-tab" href="#eucom"     style="--tab-color:#3ec98a">EUCOM</a>
+  <a class="nav-gcc nav-tab" href="#centcom"   style="--tab-color:#f0a830">CENTCOM</a>
+  <a class="nav-gcc nav-tab" href="#indopacom" style="--tab-color:#a07cf4">INDOPACOM</a>
+  <a class="nav-gcc nav-tab" href="#africom"   style="--tab-color:#f05a5a">AFRICOM</a>
+  <a class="nav-gcc nav-tab" href="#southcom"  style="--tab-color:#2eccd6">SOUTHCOM</a>
+  <span class="gcc-nav-meta">one dot = one confirmed contract · scroll to navigate</span>
+</nav>
+<div class="prog-header">
+  <div class="ph-title"><span class="w">WEXMAC</span> · <span class="l">LOGCAP V</span> · <span class="e">EAGLE II BOA</span> — Overview</div>
+  <div class="ph-sub">
+    <span style="color:var(--wexmac)">●</span> WEXMAC confirmed TO &nbsp;|&nbsp; <span style="color:var(--logcap)">◈</span> LOGCAP V dual-vehicle &nbsp;|&nbsp; <span style="color:var(--eagle)">●</span> EAGLE II BOA &nbsp;|&nbsp; <span style="color:var(--purple)">●</span> Both EAGLE + LOGCAP &nbsp;|&nbsp; <span style="color:var(--orange)">◆</span> Recompete target &nbsp;|&nbsp; <span style="color:#f0f0c0">●</span> New/undisclosed award
+  </div>
+  <div class="ph-stats">
+    <div><div class="ph-stat-label">WEXMAC TOs</div><div class="ph-stat-value" style="color:var(--wexmac)" id="cnt-wexmac">—</div></div>
+    <div><div class="ph-stat-label">LOGCAP V sites</div><div class="ph-stat-value" style="color:var(--logcap)" id="cnt-logcap">—</div></div>
+    <div><div class="ph-stat-label">EAGLE II BOA sites</div><div class="ph-stat-value" style="color:var(--eagle)" id="cnt-eagle">—</div></div>
+    <div><div class="ph-stat-label">Recompete targets</div><div class="ph-stat-value" style="color:var(--orange)" id="cnt-recomp">—</div></div>
+    <div><div class="ph-stat-label">Total locations</div><div class="ph-stat-value" style="color:var(--text)" id="cnt-total">—</div></div>
+  </div>
+</div>
+
+<div id="sections"></div>
+</div>
+<div id="panel-intel">
+<!-- TOP BAR -->
+
+  <div class="tb-spacer"></div>
+  <div class="tb-stamp">June 2026 · RMGS Internal</div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-inner">
+    <div class="hero-eyebrow">U.S. Southern Command · AOR Intelligence</div>
+    <h1 class="hero-title">SOUTHCOM — <strong>Strategic Logistics Environment</strong></h1>
+    <p class="hero-sub">Synthesized from DoS press releases, SOUTHCOM 2026 Posture Statement, and open-source contract intelligence. Covers counter-FTO posture, China competition, theater logistics demand, and active contract vehicles operating in the AOR.</p>
+    <div class="hero-meta">
+      <div class="hero-stat"><div class="hero-stat-v" style="color:var(--red)">13</div><div class="hero-stat-l">FTOs in AOR</div></div>
+      <div class="hero-stat"><div class="hero-stat-v" style="color:#555555">30+</div><div class="hero-stat-l">Countries in AOR</div></div>
+      <div class="hero-stat"><div class="hero-stat-v" style="color:var(--amber)">$350M</div><div class="hero-stat-l">DoD SOUTHCOM FY26 request</div></div>
+      <div class="hero-stat"><div class="hero-stat-v" style="color:var(--orange)">9%</div><div class="hero-stat-l">Drug shipments intercepted (2024)</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- ── SECTION 1: STRATEGIC FRAMING ── -->
+  <div class="sec">
+    <div class="sec-head">
+      <div class="sec-eyebrow">01</div>
+      <div class="sec-title">Strategic Framing — Administration Posture</div>
+    </div>
+
+    <div class="grid-2">
+      <div>
+        <div class="quote">
+          <div class="quote-text">For too long, leaders in Washington abandoned the simple wisdom of the Monroe Doctrine. Business as usual will not stand.</div>
+          <div class="quote-attr">— SecDef Pete Hegseth, Americas Counter Cartel Conference, Doral FL, March 2026</div>
+        </div>
+        <div class="quote" style="margin-top:12px">
+          <div class="quote-text">Our ability to project, employ, and sustain forces to secure key terrain depends on a robust and resilient logistics enterprise. The dispersed geography, partner nation dependencies, and limited infrastructure across the USSOUTHCOM AOR create sustainment vulnerabilities that demand deliberate, coordinated efforts to mitigate.</div>
+          <div class="quote-attr">— Gen. Francis Donovan, SOUTHCOM Commander, Senate SASC Posture Statement, March 2026</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="signal">
+          <div class="signal-head"><div class="signal-icon sig-amber">⚑</div><div class="signal-title">"Donroe Doctrine" — Monroe Doctrine Reimagined</div></div>
+          <div class="signal-body">The Trump administration's <strong>2025 NSS and 2026 NDS</strong> frame the Western Hemisphere as homeland defense space. SOUTHCOM is directed to "defend the homeland at range, speed, and scale" — a departure from the traditional security cooperation framing. Hegseth invoked the Monroe Doctrine as explicit legal basis for military counter-narcotics operations.</div>
+        </div>
+        <div class="signal">
+          <div class="signal-head"><div class="signal-icon sig-teal">⟳</div><div class="signal-title">NORTHCOM-SOUTHCOM Merger Under Discussion</div></div>
+          <div class="signal-body">The Pentagon and White House are actively examining merging SOUTHCOM with NORTHCOM into a single "AMERICOM" covering all of North, Central, and South America. Hegseth has expressed interest in reducing combatant command count. If implemented, it would reshape theater logistics contracting structures.</div>
+        </div>
+        <div class="signal">
+          <div class="signal-head"><div class="signal-icon sig-red">!</div><div class="signal-title">USAID Dismantled — DoD Filling the Gap</div></div>
+          <div class="signal-body">USAID was effectively eliminated in early 2025. Civilian HA/DR coordination, country capacity-building, and development programming have been defunded across all SOUTHCOM partner nations. DoD contractor vehicles — primarily <strong>WEXMAC</strong> — are now the default instrument for humanitarian response and capacity-building in the AOR.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 2: OPERATION SOUTHERN SPEAR ── -->
+  <div class="sec">
+    <div class="sec-head">
+      <div class="sec-eyebrow">02</div>
+      <div class="sec-title">Operation Southern Spear — Active Campaign</div>
+      <div class="sec-meta">Nov 2025 – present</div>
+    </div>
+
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-label">Command structure</div>
+        <div class="card-title">JTF Southern Spear / II MEF</div>
+        <div class="card-body">Announced Oct 2025 by Hegseth, Southern Spear is led by II Marine Expeditionary Force (Camp Lejeune), synchronizing counter-narcotics operations across the Western Hemisphere. Employs naval task forces, UAS, and autonomous platforms for maritime interdiction.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Scope of operations</div>
+        <div class="card-title">Caribbean + Eastern Pacific Maritime Corridor</div>
+        <div class="card-body">Over 45 strikes against suspected smuggling vessels and 150+ reported deaths through early 2026. USCG Maritime Security Response Teams accompanied by USMC Special Purpose Forces conduct maritime interdiction. Shadow oil fleet targeting added as secondary mission.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Ecuador ground operations</div>
+        <div class="card-title">March 2026 — Joint Ecuadorian-US Operations</div>
+        <div class="card-body">USSOUTHCOM provided intelligence enabling capture of "Fito," Ecuador's most wanted FTO leader. March 3, 2026: joint Ecuadorian-US military operations against Los Lobos cartel in Guayaquil. DEA Guayaquil Resident Office and DEA Europe Division both participated.</div>
+      </div>
+    </div>
+
+    <div class="quote" style="margin-top:16px">
+      <div class="quote-text">Narco-terrorists are responding to sustained pressure by shifting to new methods and conveyances. JTF Southern Spear continues to conduct decisive operations to detect, disrupt, and dismantle narco-terrorist networks.</div>
+      <div class="quote-attr">— Gen. Donovan, SOUTHCOM Posture Statement, March 2026</div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 3: THEATER POSTURE — NEW SITES ── -->
+  <div class="sec">
+    <div class="sec-head">
+      <div class="sec-eyebrow">03</div>
+      <div class="sec-title">Theater Posture — New and Expanding Sites</div>
+      <div class="sec-meta">Source: Donovan Posture Statement + USACE reporting</div>
+    </div>
+
+    <div class="site-grid">
+      <div class="site-card site-new">
+        <div class="site-name">Panama Pacifico Int'l Airport</div>
+        <div class="site-country">★ New — Panama</div>
+        <div class="site-role">JSCG–P rotational US presence. Joint training exercises and warfighting readiness with Panamanian forces.</div>
+      </div>
+      <div class="site-card site-new">
+        <div class="site-name">Naval Base Noel Rodriguez</div>
+        <div class="site-country">★ New — Panama</div>
+        <div class="site-role">JSCG–P rotational presence. Maritime domain awareness and interoperability with Panamanian naval forces.</div>
+      </div>
+      <div class="site-card site-new">
+        <div class="site-name">Aeronaval Base Cristóbal Colón</div>
+        <div class="site-country">★ New — Panama (Caribbean side)</div>
+        <div class="site-role">USACE construction underway — new multi-use billeting and admin facility. Combined Jungle Operations Training Center (CJOTC) reestablished. Supports PANAMAX exercises and US presence on Caribbean side of Canal.</div>
+      </div>
+      <div class="site-card site-new">
+        <div class="site-name">Comalapa CSL</div>
+        <div class="site-country">Expanding — El Salvador</div>
+        <div class="site-role">Cooperative Security Location enabling increased force flow into AOR. Hosted Hybrid Fleet Campaign FLEX event — civ-mil technology operationalization with partner nations and private industry.</div>
+      </div>
+      <div class="site-card">
+        <div class="site-name">Soto Cano Air Base / JTF-Bravo</div>
+        <div class="site-country">Enduring — Honduras</div>
+        <div class="site-role">SOUTHCOM's only permanent forward base. Hurricane Melissa Jamaica HA/DR response (2025) with 22nd MEU and DoS DART. New WEXMAC award (undisclosed firm/value).</div>
+      </div>
+      <div class="site-card">
+        <div class="site-name">Naval Station Guantanamo Bay</div>
+        <div class="site-country">Expanding — Cuba (leased)</div>
+        <div class="site-role">JTF–Southern Guard established for DHS illegal alien holding ops. Infrastructure deteriorating under expanded operational demand. Oldest US overseas military installation. Contractor: Akima ($163.4M MOC contract).</div>
+      </div>
+      <div class="site-card site-new">
+        <div class="site-name">Port Projects — Guatemala + Peru</div>
+        <div class="site-country">★ New — USACE led</div>
+        <div class="site-role">Major port infrastructure investments to deter and counter Chinese BRI-linked port development. Counter-investment, not just interdiction.</div>
+      </div>
+      <div class="site-card site-new">
+        <div class="site-name">Rare Earth Technical Assistance — Dominican Republic</div>
+        <div class="site-country">★ New — Dominican Republic</div>
+        <div class="site-role">USACE technical assistance for excavation and exploration of rare earth elements. Direct link to US critical minerals strategy.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 4: COUNTRY COOPERATION MATRIX ── -->
+  <div class="sec">
+    <div class="sec-head">
+      <div class="sec-eyebrow">04</div>
+      <div class="sec-title">Country Cooperation Matrix — Rubio Taxonomy</div>
+      <div class="sec-meta">Source: Rubio press remarks, Dec 2025 + FY2026 Drug Determination</div>
+    </div>
+
+    <table class="country-table">
+      <thead>
+        <tr>
+          <th>Country</th>
+          <th>Rubio Cooperation Tier</th>
+          <th>Key Issues</th>
+          <th>FY26 Drug List</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="country-name">Venezuela</span></td>
+          <td><span class="coop-dot coop-teal" style="background:#2a6090"></span>In transition — Maduro captured Jan 2026; Embassy Caracas reopened Mar 2026; 3-phase transition plan: stability → recovery → democratic election</td>
+          <td><span class="pill pill-fto">FTO nexus</span><span class="pill pill-cn">Iran/Russia/China</span><span class="pill pill-drug">narcoterrorism</span></td>
+          <td style="color:var(--red);font-family:var(--mono);font-size:9px">DESIGNATED</td>
+        </tr>
+        <tr>
+          <td><span class="country-name">Colombia</span></td>
+          <td><span class="coop-dot coop-med"></span>"Unusual president — institutions cooperate despite political leadership." Intel fusion cell active in Bogota. Hundreds of labs destroyed, dozens of FTO leaders neutralized.</td>
+          <td><span class="pill pill-fto">FARC/ELN</span><span class="pill pill-drug">cocaine</span></td>
+          <td style="color:var(--red);font-family:var(--mono);font-size:9px">FAILED DEMONSTRABLY</td>
+        </tr>
+        <tr>
+          <td><span class="country-name">Panama</span></td>
+          <td><span class="coop-dot coop-high"></span>Strong ally — withdrew from BRI, auditing Chinese ports, Supreme Court ruling removed Chinese port operator, JSCG–P established, CJOTC construction underway</td>
+          <td><span class="pill pill-cn">Canal security</span><span class="pill pill-mig">migration</span><span class="pill pill-drug">Darién transit</span></td>
+          <td style="color:var(--amber);font-family:var(--mono);font-size:9px">LISTED</td>
+        </tr>
+        <tr>
+          <td><span class="country-name">Ecuador</span></td>
+          <td><span class="coop-dot coop-high"></span>High cooperation — joint Mar 2026 operations against Los Lobos; Noboa government actively partnering; Donovan visited in first weeks of command</td>
+          <td><span class="pill pill-fto">Los Lobos</span><span class="pill pill-drug">cocaine transit</span></td>
+          <td style="color:var(--amber);font-family:var(--mono);font-size:9px">LISTED</td>
+        </tr>
+        <tr>
+          <td><span class="country-name">El Salvador</span></td>
+          <td><span class="coop-dot coop-high"></span>High cooperation — Comalapa CSL active, Bukele government fully aligned with US security priorities on migration and counter-cartel operations</td>
+          <td><span class="pill pill-mig">migration</span><span class="pill pill-drug">transit</span></td>
+          <td style="color:var(--amber);font-family:var(--mono);font-size:9px">LISTED</td>
+        </tr>
+        <tr>
+          <td><span class="country-name">Honduras</span></td>
+          <td><span class="coop-dot coop-med"></span>"Some extent" cooperation noted by Rubio — political friction but Soto Cano/JTF-Bravo endures. New WEXMAC award at Soto Cano (undisclosed).</td>
+          <td><span class="pill pill-drug">transit</span><span class="pill pill-mig">migration</span></td>
+          <td style="color:var(--amber);font-family:var(--mono);font-size:9px">LISTED</td>
+        </tr>
+        <tr>
+          <td><span class="country-name">Haiti</span></td>
+          <td><span class="coop-dot coop-low"></span>Crisis state — FTO-driven violence overwhelming government; gunfire aimed at US Embassy. SOUTHCOM supporting Kenyan-led MSS mission. Maritime mass migration risk flagged by Donovan.</td>
+          <td><span class="pill pill-fto">FTO control</span><span class="pill pill-mig">mass migration risk</span></td>
+          <td style="color:var(--amber);font-family:var(--mono);font-size:9px">LISTED</td>
+        </tr>
+        <tr>
+          <td><span class="country-name">Nicaragua</span></td>
+          <td><span class="coop-dot coop-none"></span>Non-cooperative — Ortega dictatorship. Russia deploying naval vessels. Costa Rica is most affected neighbor. No US engagement.</td>
+          <td><span class="pill pill-fto">Russia presence</span><span class="pill pill-drug">transit</span></td>
+          <td style="color:var(--red);font-family:var(--mono);font-size:9px">LISTED</td>
+        </tr>
+        <tr>
+          <td><span class="country-name">Guyana / Suriname</span></td>
+          <td><span class="coop-dot coop-high"></span>High cooperation — Rubio visited Mar 2025; signed security agreements for intelligence sharing and mil cooperation; linked to Venezuela territorial threat</td>
+          <td><span class="pill pill-cn">Chinese investment</span><span class="pill pill-drug">narco networks</span></td>
+          <td style="color:var(--muted);font-family:var(--mono);font-size:9px">—</td>
+        </tr>
+        <tr>
+          <td><span class="country-name">Dominican Republic</span></td>
+          <td><span class="coop-dot coop-high"></span>High cooperation — MOU for US border collaboration; WEXMAC Continuing Promise 2025 executed (Trailer Bridge). USACE rare earth technical assistance.</td>
+          <td><span class="pill pill-drug">transit</span><span class="pill pill-mig">migration</span></td>
+          <td style="color:var(--amber);font-family:var(--mono);font-size:9px">LISTED</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── SECTION 5: CONTRACTOR LANDSCAPE ── -->
+  <div class="sec">
+    <div class="sec-head">
+      <div class="sec-eyebrow">05</div>
+      <div class="sec-title">Active Contractor Landscape — SOUTHCOM AOR</div>
+      <div class="sec-meta">WEXMAC · LOGCAP V · Standalone contracts</div>
+    </div>
+
+    <div class="card" style="padding:0 20px">
+      <div class="contract-row" style="padding-top:14px">
+        <div class="cr-firm">Amentum / PAE-Parsons</div>
+        <div class="cr-role">LOGCAP V SOUTHCOM prime — theater-setting, base life support at Soto Cano (Honduras bulk of activity). APS-5 Kuwait prepositioned stock ($128.2M task order, June 2024 — GAO sustaining protest under review).</div>
+        <div class="cr-vehicle">LOGCAP V</div>
+        <div class="cr-status active">Active</div>
+      </div>
+      <div class="contract-row">
+        <div class="cr-firm">Trailer Bridge</div>
+        <div class="cr-role">Continuing Promise 2025 — Puerto Plata, Dominican Republic. Full medical site for USNS Comfort: potable water, sanitation, tents, generators, MHE, mobile hotspots. WEXMAC prime.</div>
+        <div class="cr-vehicle">WEXMAC 2.0</div>
+        <div class="cr-status active">Executed Aug 2025</div>
+      </div>
+      <div class="contract-row">
+        <div class="cr-firm">Terrestris / K2 JV</div>
+        <div class="cr-role">Puno, Peru — USSOUTHCOM HA/DP task order completed Nov 2025. EOC equipment (generators, forklifts, warehouse, UHF/VHF radios, videowall), 30+ INDECI personnel trained bilingual, Andes radio repeater deployment.</div>
+        <div class="cr-vehicle">WEXMAC 2.0</div>
+        <div class="cr-status active">Executed Nov 2025</div>
+      </div>
+      <div class="contract-row">
+        <div class="cr-firm">KVG / Bodwé-KVG</div>
+        <div class="cr-role">NEO Sudan humanitarian evacuation (WEXMAC 1.0). Op. Allies Refuge — Spain (Rota) and Italy (Sigonella) staging logistics for Afghanistan NEO. First WEXMAC 2.0 task order, Jan 2025 (location undisclosed).</div>
+        <div class="cr-vehicle">WEXMAC 1.0 → 2.0</div>
+        <div class="cr-status active">Active</div>
+      </div>
+      <div class="contract-row">
+        <div class="cr-firm">Akima</div>
+        <div class="cr-role">Migrant Operations Center — Naval Station Guantanamo Bay. $163.4M ceiling contract for DHS-led illegal alien holding operations. JTF-Southern Guard established in coordination.</div>
+        <div class="cr-vehicle">NAVSUP (standalone)</div>
+        <div class="cr-status active">Active — expanding</div>
+      </div>
+      <div class="contract-row" style="padding-bottom:14px">
+        <div class="cr-firm">Undisclosed</div>
+        <div class="cr-role">Soto Cano AB / JTF-Bravo — new WEXMAC 2.0 award. Base operations and life support, JTF-Bravo expeditionary logistics, exercise support. Firm and value not publicly disclosed.</div>
+        <div class="cr-vehicle">WEXMAC 2.0</div>
+        <div class="cr-status new">★ New award</div>
+      </div>
+    </div>
+
+    <div style="margin-top:14px;font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.8">
+      <strong style="color:var(--text)">Pattern:</strong> WEXMAC is the primary execution vehicle for HA/DR task orders. All confirmed WEXMAC SOUTHCOM performers are small or disadvantaged businesses — SDVOSB, 8(a), Native-owned. LOGCAP V provides the standing theater-setting logistics posture (Amentum at Soto Cano). GTMO runs on standalone NAVFAC and NAVSUP contracts, outside WEXMAC / LOGCAP / EAGLE scope.
+    </div>
+  </div>
+
+  <!-- ── SECTION 6: DEMAND SIGNALS ── -->
+  <div class="sec">
+    <div class="sec-head">
+      <div class="sec-eyebrow">06</div>
+      <div class="sec-title">Forward Demand Signals — Logistics Contract Implications</div>
+    </div>
+
+    <div class="grid-2">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="tier-card tier-1">
+          <div class="tier-label">Critical — Haiti mass migration risk</div>
+          <div class="tier-name">HA/DR Mass Casualty Response</div>
+          <div class="tier-body">Donovan explicitly flagged Haiti's FTO-driven instability as risking a "maritime mass migration event." A major Haiti crisis would be the largest short-fuse HA/DR mobilization in the AOR since the 2010 earthquake. WEXMAC is the only vehicle fast enough to respond at scale. No USAID to coordinate — DoD contractors are the first line.</div>
+        </div>
+        <div class="tier-card tier-2">
+          <div class="tier-label">High — Venezuela recovery/reconstruction</div>
+          <div class="tier-name">Post-Maduro Economic Recovery Access</div>
+          <div class="tier-body">Rubio's three-phase plan explicitly requires Western and American companies to have "access to the Venezuelan market." Phase 2 (recovery) needs logistics infrastructure, supply chain, and reconstruction capacity. With USAID gone, DoD contract vehicles — WEXMAC, LOGCAP V — become the instruments for both military and humanitarian engagement during transition.</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="tier-card tier-2">
+          <div class="tier-label">High — Panama maritime logistics</div>
+          <div class="tier-name">Canal Security + New Site Infrastructure</div>
+          <div class="tier-body">Three new US military sites in Panama, USACE construction at Cristóbal Colón, and the explicit priority of "ensuring unfettered US access to the Panama Canal" create sustained logistics demand at a chokepoint with direct relevance to INDOPACOM maritime prepositioning. RMGS's international shipping company relationship covers Pacific, SE Asia, NE Asia, and island chains — this is the strategic bridge.</div>
+        </div>
+        <div class="tier-card tier-3">
+          <div class="tier-label">Elevated — counter-FTO logistics support</div>
+          <div class="tier-name">Op. Southern Spear Sustainment</div>
+          <div class="tier-body">The II MEF Joint Task Force requires sustained logistics support across a dispersed maritime operating area. Donovan flagged the AOR's "limited infrastructure" and "partner nation dependencies" as vulnerabilities requiring deliberate mitigation. As OSS operations shift FTO networks to new methods, the operational tempo and footprint requirements will increase, not decrease.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 7: KEY EVENTS TIMELINE ── -->
+  <div class="sec">
+    <div class="sec-head">
+      <div class="sec-eyebrow">07</div>
+      <div class="sec-title">Key Events Timeline — Jan 2025 – Jun 2026</div>
+    </div>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-date">Feb 2025</div>
+        <div class="tl-content">
+          <div class="tl-title">Rubio's first foreign trip — Panama, El Salvador, Costa Rica, Guatemala, DR</div>
+          <div class="tl-body">Canal treaty violation determination delivered to Panama. BRI withdrawal and Chinese port audit committed. Repatriation programs discussed across Central America.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">Mar 2025</div>
+        <div class="tl-content">
+          <div class="tl-title">Rubio tours Guyana + Suriname — security agreements signed</div>
+          <div class="tl-body">Intelligence sharing and military cooperation agreements. Venezuela territorial threat framing anchors regional security dialogue.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">Aug 2025</div>
+        <div class="tl-content">
+          <div class="tl-title">Continuing Promise 2025 — Trailer Bridge executes WEXMAC TO in Puerto Plata, DR</div>
+          <div class="tl-body">Medical site for USNS Comfort. Confirmed WEXMAC 2.0 task order. Small business prime executes HA/DR mission without USAID coordination.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">Oct 2025</div>
+        <div class="tl-content">
+          <div class="tl-title">Hegseth launches counter-narcotics JTF under II MEF</div>
+          <div class="tl-body">New joint task force at Camp Lejeune to synchronize Western Hemisphere counter-narcotics operations. Operation Southern Spear formally announced November 2025.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">Nov 2025</div>
+        <div class="tl-content">
+          <div class="tl-title">Terrestris completes USSOUTHCOM HA/DP task order — Puno, Peru</div>
+          <div class="tl-body">EOC infrastructure, bilingual training, Andes radio repeaters delivered to INDECI. Type example of WEXMAC filling USAID capacity-building gap.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">Jan 2026</div>
+        <div class="tl-content">
+          <div class="tl-title">Maduro captured — US Embassy Caracas suspended</div>
+          <div class="tl-body">Three-phase transition plan announced by Rubio: stability → recovery → democratic elections. Venezuela enters the most significant political transition in the hemisphere in a generation.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">Feb 2026</div>
+        <div class="tl-content">
+          <div class="tl-title">Gen. Donovan assumes SOUTHCOM command</div>
+          <div class="tl-body">SOCOM veteran (former USSOCOM vice commander) replaces Adm. Holsey. Immediate visits to Venezuela interim leadership, Ecuador President Naboa. Explicitly names logistics vulnerability as top-tier operational risk in posture statement.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">Mar 2026</div>
+        <div class="tl-content">
+          <div class="tl-title">Americas Counter Cartel Conference — Doral, FL (SOUTHCOM HQ)</div>
+          <div class="tl-body">16 Latin American/Caribbean nations. Hegseth demands burden sharing. Donovan presents counter-FTO campaign vision. Ecuador joint ops against Los Lobos announced.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">Mar 2026</div>
+        <div class="tl-content">
+          <div class="tl-title">US Embassy Caracas operations resume</div>
+          <div class="tl-body">State Dept. announces resumption. Signals transition from stability to recovery phase. Western company market access discussions begin.</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-date">Jun 2026</div>
+        <div class="tl-content">
+          <div class="tl-title">Current — Continuing Promise 2026 in planning</div>
+          <div class="tl-body">USNS Comfort deployment to Grenada, Panama, Colombia, Ecuador, Costa Rica, DR planned Jun–Aug 2026. WEXMAC site support TOs anticipated. No USAID coordination layer.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <a class="back-link" href="#" onclick="showTab('map');setTimeout(()=>document.getElementById('southcom')?.scrollIntoView({behavior:'smooth'}),100);return false;">← Return to WEXMAC · LOGCAP V · EAGLE II Overview — SOUTHCOM</a>
+
+</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+<script>
+
+// ── VEHICLE COLORS ────────────────────────────────────────────────────────
+const VC = {
+  WEXMAC:'#f0c040', LOGCAP:'#f0a830', EAGLE:'#4d82ff',
+  BOTH:'#a07cf4', RECOMP:'#ff6b35', NEW:'#f0f0c0'
+};
+
+// ── FIRM COLORS ───────────────────────────────────────────────────────────
+const FC = {
+  'V2X':'#a07cf4','KBR':'#f0a830','Logistics Plus':'#4d82ff',
+  'Trailer Bridge':'#4ade80','Relyant Global':'#60a5fa',
+  'KVG / Bodwé-KVG':'#facc15','Response AI':'#22c55e',
+  'GardaWorld Federal':'#fb923c','Inchcape Govt Svcs':'#2eccd6',
+  'Amentum':'#f0a830','Constellis/Centerra':'#f05a5a',
+  'NOBLE Supply':'#3ec98a','Toll Remote':'#ff6b35','Terrestris':'#e879a0',
+  'Akima':'#2eccd6','Vanquish':'#3ec98a','Marton':'#a07cf4',
+  'Chenega':'#f05050','PD Systems':'#a0c4ff','Undisclosed':'#f0f0c0',
+};
+
+// ── GCC CONFIGS ───────────────────────────────────────────────────────────
+const GCCS = [
+  {id:'northcom', name:'U.S. Northern Command', short:'NORTHCOM', hq:'Peterson SFB, CO',    color:'#38bdf8', usMap:true,  cx:-98,  cy:50,  scale:600},
+  {id:'eucom',    name:'U.S. European Command', short:'EUCOM',    hq:'Stuttgart, Germany',  color:'#3ec98a', usMap:false, cx:18,   cy:52,  scale:900},
+  {id:'centcom',  name:'U.S. Central Command',  short:'CENTCOM',  hq:'MacDill AFB, FL',     color:'#f0a830', usMap:false, cx:48,   cy:28,  scale:700},
+  {id:'indopacom',name:'U.S. Indo-Pacific Command',short:'INDOPACOM',hq:'Camp H.M. Smith, HI',color:'#a07cf4',usMap:false,cx:138, cy:15,  scale:420},
+  {id:'africom',  name:'U.S. Africa Command',   short:'AFRICOM',  hq:'Stuttgart, Germany',  color:'#f05a5a', usMap:false, cx:22,   cy:5,   scale:550},
+  {id:'southcom', name:'U.S. Southern Command', short:'SOUTHCOM', hq:'Doral, FL',           color:'#2eccd6', usMap:false, cx:-72,  cy:12,  scale:650},
+];
+
+const BOUNDS = {
+  northcom:{cx:-98,cy:50,scale:600}, eucom:{cx:18,cy:52,scale:900},
+  centcom:{cx:48,cy:28,scale:700},   indopacom:{cx:138,cy:15,scale:420},
+  africom:{cx:22,cy:5,scale:550},    southcom:{cx:-72,cy:12,scale:650},
+};
+
+// ── ALL LOCATIONS ─────────────────────────────────────────────────────────
+// type: 'wexmac'=confirmed WEXMAC TO, 'logcap'=LOGCAP V dual-vehicle,
+//       'eagle'=EAGLE II BOA, 'both'=EAGLE+LOGCAP, 'recomp'=recompete target,
+//       'new'=new/undisclosed award
+const LOCS = [
+
+  // ── NORTHCOM — EAGLE II BOA + LOGCAP V ──────────────────────────────────
+  {
+    id:'ft-cavazos', gcc:'northcom',
+    name:'Fort Cavazos', site:'Fort Cavazos, TX', lat:31.14, lng:-97.78,
+    type:'both', color:VC.BOTH,
+    recompete:{incumbent:'Akima Support Operations',ceiling:'$101M',expires:'Aug 2025',
+      notes:'Largest NORTHCOM LRC by value. 11 offerors on prior award. EAGLE II recompete imminent.'},
+    contractors:[
+      {name:'Akima Support Operations',vehicle:'EAGLE',type:'ANC 8(a)',role:'LRC — maintenance, supply, ammo, transportation',ceiling:'$101M',period:'2020–2025',status:'Expiring',color:FC['Akima']},
+      {name:'KBR',vehicle:'LOGCAP',type:'Prime',role:'Life support, contingency ops, Warfighter exercise support',ceiling:'LOGCAP V TO',period:'Ongoing',status:'Active',color:FC['KBR']},
+    ]
+  },
+  {
+    id:'ft-bliss', gcc:'northcom',
+    name:'Fort Bliss', site:'Fort Bliss, TX', lat:31.85, lng:-106.42,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'KBR',vehicle:'LOGCAP',type:'Prime',role:'Life support, contingency ops, border mission support',ceiling:'LOGCAP V TO',period:'Ongoing',status:'Active',color:FC['KBR']}]
+  },
+  {
+    id:'ft-riley', gcc:'northcom',
+    name:'Fort Riley', site:'Fort Riley, KS', lat:39.06, lng:-96.78,
+    type:'both', color:VC.BOTH,
+    contractors:[
+      {name:'Marton Technologies',vehicle:'EAGLE',type:'SB',role:'LRC maintenance, supply & transportation',ceiling:'Not disclosed',period:'Ongoing',status:'Active',color:FC['Marton']},
+      {name:'KBR',vehicle:'LOGCAP',type:'Prime',role:'Warfighter exercise support',ceiling:'LOGCAP V TO',period:'Ongoing',status:'Active',color:FC['KBR']},
+    ]
+  },
+  {
+    id:'ft-carson', gcc:'northcom',
+    name:'Fort Carson', site:'Fort Carson, CO', lat:38.74, lng:-104.79,
+    type:'both', color:VC.BOTH,
+    contractors:[
+      {name:'Sunik (Akima)',vehicle:'EAGLE',type:'ANC 8(a)',role:'LRC maintenance, supply & transportation — 4th ID (~350 FTE)',ceiling:'$85M',period:'2022–2027',status:'Active',color:FC['Akima']},
+      {name:'KBR',vehicle:'LOGCAP',type:'Prime',role:'Life support & exercise support',ceiling:'LOGCAP V TO',period:'Ongoing',status:'Active',color:FC['KBR']},
+    ]
+  },
+  {
+    id:'ft-campbell', gcc:'northcom',
+    name:'Fort Campbell', site:'Fort Campbell, KY/TN', lat:36.66, lng:-87.47,
+    type:'eagle', color:VC.EAGLE,
+    contractors:[{name:'Vanquish Worldwide',vehicle:'EAGLE',type:'SDVOSB',role:'LRC — maintenance, supply & transportation — 101st ABN, 5th SFG(A), 160th SOAR(A)',ceiling:'$115M',period:'2025–2030',status:'Active',color:FC['Vanquish']}]
+  },
+  {
+    id:'ft-bragg', gcc:'northcom',
+    name:'Fort Bragg', site:'Fort Bragg, NC', lat:35.14, lng:-79.00,
+    type:'recomp', color:VC.RECOMP,
+    recompete:{incumbent:'V2X / Vectrus',ceiling:'$593M',expires:'2026',
+      notes:'Largest single EAGLE task order ever awarded. V2X incumbent since 2016. Expected to recompete as EAGLE II BOA SB set-aside — creating an opening for qualified SB primes.'},
+    contractors:[
+      {name:'V2X / Vectrus (incumbent)',vehicle:'EAGLE',type:'Large Business',role:'Full LRC — maintenance, supply, ammo, transportation — 82nd ABN, XVIII Corps',ceiling:'$593M',period:'2016–2026',status:'Expiring',color:'#ff6b35'},
+      {name:'Marton Technologies',vehicle:'EAGLE',type:'SB',role:'SSA — sub scope',ceiling:'Not disclosed',period:'Ongoing',status:'Active',color:FC['Marton']},
+      {name:'Vanquish Worldwide (sub)',vehicle:'EAGLE',type:'SDVOSB',role:'189th DSSB SSA assistance team',ceiling:'Not disclosed',period:'Ongoing',status:'Active',color:FC['Vanquish']},
+    ]
+  },
+  {
+    id:'ft-benning', gcc:'northcom',
+    name:'Fort Benning', site:'Fort Benning, GA', lat:32.35, lng:-84.99,
+    type:'recomp', color:VC.RECOMP,
+    recompete:{incumbent:'V2X / Vectrus',ceiling:'$265M',expires:'Dec 2026',
+      notes:'V2X held via original EAGLE BOA. Recompete likely under EAGLE II SB set-aside. Watch SAM.gov for RFP late 2025 / early 2026.'},
+    contractors:[{name:'V2X / Vectrus (incumbent)',vehicle:'EAGLE',type:'Large Business',role:'Full LRC — maintenance, supply, transportation',ceiling:'$265M',period:'2022–2026',status:'Expiring',color:'#ff6b35'}]
+  },
+  {
+    id:'jblm', gcc:'northcom',
+    name:'JBLM', site:'Joint Base Lewis-McChord, WA', lat:47.09, lng:-122.58,
+    type:'recomp', color:VC.RECOMP,
+    recompete:{incumbent:'PD Systems',ceiling:'$28M',expires:'2023',
+      notes:'PD Systems task order expired. Recompete status unclear — watch SAM.gov. Yakima Training Center included in scope.'},
+    contractors:[
+      {name:'PD Systems',vehicle:'EAGLE',type:'SDVOSB',role:'Supply & transportation — JBLM LRC + Yakima Training Center',ceiling:'$28M',period:'2018–2023',status:'Expiring',color:FC['PD Systems']},
+      {name:'KBR',vehicle:'LOGCAP',type:'Prime',role:'Life support & contingency exercise support',ceiling:'LOGCAP V TO',period:'Ongoing',status:'Active',color:FC['KBR']},
+    ]
+  },
+  {
+    id:'ft-mccoy', gcc:'northcom',
+    name:'Fort McCoy', site:'Fort McCoy, WI', lat:43.94, lng:-90.69,
+    type:'eagle', color:VC.EAGLE,
+    contractors:[{name:'Vanquish Worldwide',vehicle:'EAGLE',type:'SDVOSB',role:'LRC maintenance, supply & transportation',ceiling:'$58M',period:'2025–2030',status:'Active',color:FC['Vanquish']}]
+  },
+  {
+    id:'ft-leonard-wood', gcc:'northcom',
+    name:'Fort Leonard Wood', site:'Fort Leonard Wood, MO', lat:37.72, lng:-92.14,
+    type:'eagle', color:VC.EAGLE,
+    contractors:[{name:'Vanquish Worldwide',vehicle:'EAGLE',type:'SDVOSB',role:'LRC maintenance, supply & transportation',ceiling:'$35M',period:'2024–2029',status:'Active',color:FC['Vanquish']}]
+  },
+  {
+    id:'ft-drum', gcc:'northcom',
+    name:'Fort Drum', site:'Fort Drum, NY', lat:44.05, lng:-75.77,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'KBR',vehicle:'LOGCAP',type:'Prime',role:'Life support, facilities management, contingency support',ceiling:'LOGCAP V TO',period:'Ongoing',status:'Active',color:FC['KBR']}]
+  },
+  {
+    id:'ft-knox', gcc:'northcom',
+    name:'Fort Knox', site:'Fort Knox, KY', lat:37.90, lng:-85.97,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'KBR',vehicle:'LOGCAP',type:'Prime',role:'Food service — cadet summer training (600K+ meals/yr)',ceiling:'LOGCAP V TO',period:'Seasonal',status:'Active',color:FC['KBR']}]
+  },
+  {
+    id:'ft-irwin', gcc:'northcom',
+    name:'Fort Irwin (NTC)', site:'National Training Center, CA', lat:35.26, lng:-116.69,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'KBR',vehicle:'LOGCAP',type:'Prime',role:'NTC logistics, life support & exercise support',ceiling:'LOGCAP V TO',period:'Ongoing',status:'Active',color:FC['KBR']}]
+  },
+  {
+    id:'west-point', gcc:'northcom',
+    name:'West Point', site:'U.S. Military Academy, NY', lat:41.39, lng:-73.96,
+    type:'eagle', color:VC.EAGLE,
+    contractors:[{name:'Akima Facilities Operations',vehicle:'EAGLE',type:'ANC 8(a)',role:'Comprehensive logistics support & vehicle maintenance',ceiling:'Not disclosed',period:'Ongoing',status:'Active',color:FC['Akima']}]
+  },
+  {
+    id:'rock-island', gcc:'northcom',
+    name:'Rock Island Arsenal', site:'Rock Island Arsenal, IL', lat:41.51, lng:-90.56,
+    type:'eagle', color:VC.EAGLE,
+    contractors:[{name:'Vanquish Worldwide (sub)',vehicle:'EAGLE',type:'SDVOSB',role:'LRC maintenance & transportation',ceiling:'Not disclosed',period:'Ongoing',status:'Active',color:FC['Vanquish']}]
+  },
+  {
+    id:'ft-wainwright', gcc:'northcom',
+    name:'Fort Wainwright', site:'Fort Wainwright, AK', lat:64.83, lng:-147.64,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'Chenega CBLS',vehicle:'LOGCAP',type:'ANC 8(a)',role:'Base operations support — Wainwright + training areas',ceiling:'$220M',period:'2023–2028',status:'Active',color:FC['Chenega']}]
+  },
+  {
+    id:'jber', gcc:'northcom',
+    name:'JBER', site:'Joint Base Elmendorf-Richardson, AK', lat:61.25, lng:-149.70,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'Chenega CBLS',vehicle:'LOGCAP',type:'ANC 8(a)',role:'Base operations support — INDOPACOM/NORTHCOM interface',ceiling:'$110M',period:'2024–2029',status:'Active',color:FC['Chenega']}]
+  },
+  // NORTHCOM — WEXMAC TOs
+  {
+    id:'north-1', gcc:'northcom',
+    name:'Arctic Edge 2025 — Life Support', site:'Eielson AFB / Fort Wainwright, AK', lat:64.66, lng:-147.07,
+    type:'wexmac', color:VC.WEXMAC,
+    contractors:[{name:'Response AI',vehicle:'WEXMAC 2.0',type:'SDVOSB',role:'Exercise life support — cold weather billeting, dining, transportation, sustainment; Arctic Edge 2025',ceiling:'~$5M (part of 2025 TOs)',period:'2025',status:'Active',color:FC['Response AI']}]
+  },
+  {
+    id:'north-2', gcc:'northcom',
+    name:'USNS Billeting Support', site:'U.S. Eastern seaboard port', lat:36.85, lng:-76.30,
+    type:'wexmac', color:VC.WEXMAC,
+    contractors:[{name:'Response AI',vehicle:'WEXMAC 2.0',type:'SDVOSB',role:'Naval vessel billeting — crew berthing and life support services for USNS personnel in port',ceiling:'Included in ~$5M 2025 TOs',period:'2025',status:'Active',color:FC['Response AI']}]
+  },
+  {
+    id:'north-3', gcc:'northcom',
+    name:'Southern Border Emergency Logistics', site:'U.S. Southern Border, TX/AZ', lat:29.42, lng:-98.49,
+    type:'wexmac', color:VC.WEXMAC,
+    contractors:[{name:'Response AI',vehicle:'WEXMAC 2.0',type:'SDVOSB',role:'Emergency rapid logistics — life support materials, temporary facilities, ground transportation for border operations',ceiling:'Included in ~$5M 2025 TOs',period:'2025',status:'Active',color:FC['Response AI']}]
+  },
+  {
+    id:'north-4', gcc:'northcom',
+    name:'Williamsport, MD — ICE Detention', site:'Williamsport (near Hagerstown), MD', lat:39.60, lng:-77.79,
+    type:'wexmac', color:VC.WEXMAC,
+    contractors:[{name:'KVG / Bodwé-KVG',vehicle:'WEXMAC TITUS 2.1',type:'IDIQ',role:'Detention facility ops — 825,000 sq ft warehouse; facility mgmt, staffing, security, food service, medical, transportation',ceiling:'$113M',period:'Dec 2025 – ongoing',status:'Active',color:FC['KVG / Bodwé-KVG']}]
+  },
+  {
+    id:'north-5', gcc:'northcom',
+    name:'Surprise, AZ — ICE Detention', site:'Surprise, Arizona', lat:33.63, lng:-112.37,
+    type:'wexmac', color:VC.WEXMAC,
+    contractors:[{name:'GardaWorld Federal',vehicle:'WEXMAC TITUS 2.1',type:'IDIQ',role:'Detention facility ops — 418,000 sq ft warehouse; facility mgmt, security, food service, medical, transportation',ceiling:'$313.4M',period:'Dec 2025 – ongoing',status:'Active',color:FC['GardaWorld Federal']}]
+  },
+  {
+    id:'terr-2', gcc:'northcom',
+    name:'UNITAS 2025 — Camp Lejeune Life Support', site:'Camp Lejeune / Stone Bay / MCAS Cherry Point, NC', lat:34.66, lng:-77.34,
+    type:'wexmac', color:VC.WEXMAC,
+    contractors:[{name:'Terrestris',vehicle:'WEXMAC 2.0',type:'SDVOSB 8(a)',role:'Exercise life support — 200-man tents, floodlights, mobile showers, laundry, water delivery, grey water, 24/7 maintenance; UNITAS 2025',ceiling:'Confirmed Oct 2025',period:'2025',status:'Active',color:FC['Terrestris']}]
+  },
+
+  // ── EUCOM — LOGCAP V + WEXMAC ────────────────────────────────────────────
+  {
+    id:'eucom-grafenwöhr', gcc:'eucom',
+    name:'Grafenwöhr Training Area', site:'Grafenwöhr, Bavaria, Germany', lat:49.70, lng:11.89,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'V2X',vehicle:'LOGCAP V + WEXMAC 2.0',type:'Prime',role:'Full base life support — dining, facilities, utilities, transportation, supply; WEXMAC: exercise surge, short-fuse procurement',ceiling:'LOGCAP V TO (extended June 2030)',period:'Ongoing',status:'Active',color:FC['V2X']}]
+  },
+  {
+    id:'eucom-vicenza', gcc:'eucom',
+    name:'Vicenza — Caserma Ederle', site:'Vicenza, Italy', lat:45.54, lng:11.54,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'V2X',vehicle:'LOGCAP V + WEXMAC 2.0',type:'Prime',role:'173rd IBCT (Airborne) life support — base ops, dining, facilities; WEXMAC: contingency exercise surge',ceiling:'LOGCAP V TO (extended June 2030)',period:'Ongoing',status:'Active',color:FC['V2X']}]
+  },
+  {
+    id:'eucom-ramstein', gcc:'eucom',
+    name:'Ramstein Air Base', site:'Ramstein AB, Germany', lat:49.44, lng:7.60,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'V2X',vehicle:'LOGCAP V + WEXMAC 2.0',type:'Prime',role:'USAFE-AFAFRICA hub — cargo staging, life support, airlift logistics; WEXMAC: non-LOGCAP procurement',ceiling:'LOGCAP V TO',period:'Ongoing',status:'Active',color:FC['V2X']}]
+  },
+  {
+    id:'eucom-adazi', gcc:'eucom',
+    name:'Camp Adazi — eFP Latvia', site:'Camp Adazi, Latvia', lat:57.08, lng:24.32,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'V2X',vehicle:'LOGCAP V + WEXMAC 2.0',type:'Prime',role:'eFP Battle Group Latvia — billeting, food service, supply, transportation; WEXMAC: short-fuse Baltic battlegroup surge',ceiling:'LOGCAP V / WEXMAC 2.0 scope',period:'Ongoing',status:'Active',color:FC['V2X']}]
+  },
+  {
+    id:'eucom-romania', gcc:'eucom',
+    name:'Romania — Jet Fuel Storage (JFSI)', site:'Otopeni / Bucharest area, Romania', lat:44.57, lng:26.08,
+    type:'wexmac', color:VC.WEXMAC,
+    contractors:[{name:'Relyant Global',vehicle:'WEXMAC 2.0',type:'SDVOSB',role:'Construction — cut-and-cover jet fuel storage tanks (5,000 M3); JFSI critical infrastructure for USEUCOM posture',ceiling:'$29M',period:'Confirmed executed',status:'Active',color:FC['Relyant Global']}]
+  },
+  {
+    id:'eucom-narvik', gcc:'eucom',
+    name:'Narvik — PORTS Stevedoring', site:'Port of Narvik, Norway', lat:68.44, lng:17.43,
+    type:'wexmac', color:VC.WEXMAC,
+    contractors:[{name:'Trailer Bridge',vehicle:'WEXMAC 2.0 / PORTS',type:'Prime',role:'Port & terminal ops — stevedoring, cargo handling, vessel loading/offloading at Arctic logistics hub',ceiling:'Undisclosed',period:'Confirmed executed 2025',status:'Active',color:FC['Trailer Bridge']}]
+  },
+  {
+    id:'eucom-eatlantic', gcc:'eucom',
+    name:'Op. Atlantic Resolve — eFP Shaping', site:'Eastern Europe / Poland-Baltic', lat:52.5, lng:21.0,
+    type:'wexmac', color:VC.WEXMAC,
+    contractors:[{name:'Amentum',vehicle:'WEXMAC 1.0 → 2.0',type:'Prime',role:'Theater logistics & sustainment — theater opening, staging, RSOI; life support; 150+ TOs / $45M Ukraine deterrence shaping',ceiling:'$45M (WEXMAC 1.0 precedent)',period:'Ongoing → 2.0',status:'Active',color:FC['Amentum']}]
+  },
+  // ── KBR LOGCAP V EUCOM — MISSING COUNTRIES ──────────────────────────────
+  {
+    id:'eucom-bondsteel', gcc:'eucom',
+    name:'Camp Bondsteel — Kosovo', site:'Camp Bondsteel, near Ferizaj, Kosovo', lat:42.37, lng:21.25,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'KBR',vehicle:'LOGCAP V (EUCOM)',type:'Prime',role:"KBR's longest-running LOGCAP site — since 1999. Full base life support: dining, facilities, maintenance, MWR, supply chain, engineering. 750+ local nationals employed. KFOR Regional Command East HQ.",ceiling:'LOGCAP V EUCOM ($304M mod May 2026)',period:'1999–ongoing',status:'Active',color:'#f0a830'}]
+  },
+  {
+    id:'eucom-novo-selo', gcc:'eucom',
+    name:'Novo Selo Training Area — Bulgaria', site:'Novo Selo Training Area (NSTA), Sliven Province, Bulgaria', lat:42.72, lng:26.59,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'KBR',vehicle:'LOGCAP V (EUCOM)',type:'Prime',role:'Base ops & exercise support at NSTA — field maintenance, wash rack operations, material handling equipment, base life support. 1M+ labor hours without recordable injury milestone reached 2022.',ceiling:'LOGCAP V EUCOM ($304M mod May 2026)',period:'2016–ongoing',status:'Active',color:'#f0a830'}]
+  },
+  {
+    id:'eucom-mumaiciai', gcc:'eucom',
+    name:'Mumaičiai Site — Lithuania', site:'Mumaičiai, near Šiauliai, Lithuania', lat:55.93, lng:23.31,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'KBR',vehicle:'LOGCAP V (EUCOM)',type:'Prime',role:'eFP Baltic logistics — field maintenance, material handling, vehicle wash rack, base life support for rotational US forces. KBR established vehicle wash rack in 10 days upon government request.',ceiling:'LOGCAP V EUCOM ($304M mod May 2026)',period:'2015–ongoing',status:'Active',color:'#f0a830'}]
+  },
+  {
+    id:'eucom-drawsko', gcc:'eucom',
+    name:'Drawsko Pomorskie Training Area — Poland', site:'Drawsko Pomorskie, West Pomeranian, Poland', lat:53.53, lng:15.80,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'KBR',vehicle:'LOGCAP V (EUCOM)',type:'Prime',role:'Op. Atlantic Resolve exercise logistics — base life support, tents, latrines, power generation, laundry for rotational armored brigade forces. US soldiers moved into new Polish-built barracks March 2025.',ceiling:'LOGCAP V EUCOM ($304M mod May 2026)',period:'2016–ongoing',status:'Active',color:'#f0a830'}]
+  },
+  {
+    id:'eucom-powidz', gcc:'eucom',
+    name:'Powidz Air Base — Poland', site:'Powidz Air Base, Greater Poland Voivodeship, Poland', lat:52.38, lng:17.85,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'KBR',vehicle:'LOGCAP V (EUCOM)',type:'Prime',role:'Aviation & logistics hub life support — $93M new barracks and dining facility under construction 2025. Major prepositioning site and aviation hub for US forces in Poland.',ceiling:'LOGCAP V EUCOM ($304M mod May 2026)',period:'Ongoing',status:'Active',color:'#f0a830'}]
+  },
+  {
+    id:'eucom-mihail', gcc:'eucom',
+    name:'Mihail Kogălniceanu AB — Romania', site:'Mihail Kogălniceanu Air Base, near Constanța, Romania', lat:44.36, lng:28.49,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'KBR',vehicle:'LOGCAP V (EUCOM)',type:'Prime',role:'Black Sea hub base ops — field maintenance, material handling, logistics support for rotational forces. ASG-Black Sea supported. Equipment turn-in and prepo operations.',ceiling:'LOGCAP V EUCOM ($304M mod May 2026)',period:'2015–ongoing',status:'Active',color:'#f0a830'}]
+  },
+  {
+    id:'eucom-incirlik', gcc:'eucom',
+    name:'Incirlik AB / Turkey — LOGCAP V + UABOS', site:'Incirlik Air Base, Adana, Turkey', lat:37.00, lng:35.43,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[
+      {name:'KBR',vehicle:'LOGCAP V (EUCOM) + UABOS Turkey $974M',type:'Prime',role:'LOGCAP V: life support, facility management, supply chain, equipment readiness across Turkey. UABOS: civil engineering, MWR, postal ops, vehicle management, fuel operations, air terminal services at Incirlik AB, İzmir Air Station, ODC Turkey, and Ankara Support Facility',ceiling:'LOGCAP V option ($304M EUCOM mod May 2026) + UABOS $974M',period:'Ongoing — May 2026 mod confirmed',status:'Active',color:'#f0a830'}
+    ]
+  },
+  {
+    id:'eucom-izmir', gcc:'eucom',
+    name:'İzmir Air Station + Ankara Support Facility', site:'İzmir, Turkey / Ankara, Turkey', lat:38.39, lng:27.10,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[
+      {name:'KBR',vehicle:'UABOS Turkey — $974M USAF base ops',type:'Prime',role:'Base operations — program management, civil engineering, MWR, postal operations, safety and occupational health, logistics support, fuel operations at İzmir Air Station and Ankara Support Facility',ceiling:'$974M (USAF AICC, 5-yr base + 3 options)',period:'Awarded 2020 — ongoing',status:'Active',color:'#f0a830'}
+    ]
+  },
+  {
+    id:'eucom-noble', gcc:'eucom',
+    name:'NOBLE — EUCOM AOR Rapid Delivery', site:'Europe-wide (regional warehouse)', lat:50.10, lng:8.68,
+    type:'wexmac', color:VC.WEXMAC,
+    contractors:[{name:'NOBLE Supply',vehicle:'WEXMAC 2.0 + GSA',type:'SB',role:'Rapid supply delivery — 1,000+ NSNs to any EU country within 3–5 days; MRO, consumables, force protection, medical',ceiling:'$173M (GSA EUCOM AOR)',period:'Confirmed active 2025',status:'Active',color:FC['NOBLE Supply']}]
+  },
+
+  // ── CENTCOM — LOGCAP V + WEXMAC ──────────────────────────────────────────
+  {
+    id:'centcom-arifjan', gcc:'centcom',
+    name:'Camp Arifjan, Kuwait', site:'Camp Arifjan, Kuwait', lat:28.88, lng:48.16,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'V2X',vehicle:'LOGCAP V + WEXMAC 2.0',type:'Prime',role:'Full theater life support — ~9,000+ personnel; APS-5 logistics; WEXMAC: short-fuse procurement, exercise surge',ceiling:'LOGCAP V CENTCOM (extended June 2030)',period:'Ongoing',status:'Active',color:FC['V2X']}]
+  },
+  {
+    id:'centcom-udeid', gcc:'centcom',
+    name:'Al Udeid AB, Qatar', site:'Al Udeid Air Base, Qatar', lat:25.12, lng:51.32,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'V2X',vehicle:'LOGCAP V + WEXMAC 2.0',type:'Prime',role:'USAFCENT hub — life support, dining, facilities, logistics; WEXMAC: contingency surge beyond LOGCAP base scope',ceiling:'LOGCAP V CENTCOM (extended June 2030)',period:'Ongoing',status:'Active',color:FC['V2X']}]
+  },
+  {
+    id:'centcom-alisalem', gcc:'centcom',
+    name:'Ali Al Salem AB, Kuwait', site:'Ali Al Salem Air Base, Kuwait', lat:29.35, lng:47.52,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'V2X',vehicle:'LOGCAP V + WEXMAC 2.0',type:'Prime',role:'Rotational hub — life support, logistics, dining; WEXMAC: contingency and exercise surge',ceiling:'LOGCAP V CENTCOM (extended June 2030)',period:'Ongoing',status:'Active',color:FC['V2X']}]
+  },
+  {
+    id:'centcom-kuwait-port', gcc:'centcom',
+    name:'Kuwait Naval Base — DLA GAS', site:'Shuwaikh Port / Kuwait Naval Base', lat:29.37, lng:47.91,
+    type:'wexmac', color:VC.WEXMAC,
+    contractors:[{name:'Inchcape Govt Svcs',vehicle:'WEXMAC 2.0 + DLA',type:'Prime',role:'Port ops & ship husbanding — vessel berthing, fuel supply, cargo coordination; 2,800+ RTOPs/yr across Gulf',ceiling:'DLA GAS CENTCOM (sole-sourced Dec 2024)',period:'Ongoing',status:'Active',color:FC['Inchcape Govt Svcs']}]
+  },
+  {
+    id:'centcom-biap', gcc:'centcom',
+    name:'BIAP / Victory Base Complex, Iraq', site:'Baghdad International Airport / VBC, Iraq', lat:33.26, lng:44.23,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'V2X',vehicle:'LOGCAP V + WEXMAC 2.0',type:'Prime',role:'OSC-I support, residual force life support; WEXMAC: short-fuse non-LOGCAP requirements for advisory mission',ceiling:'LOGCAP V Iraq (extended June 2030)',period:'Ongoing',status:'Active',color:FC['V2X']}]
+  },
+  {
+    id:'centcom-jordan', gcc:'centcom',
+    name:'Muwaffaq Salti AB, Jordan', site:'Muwaffaq Salti AB, Azraq, Jordan', lat:31.82, lng:36.79,
+    type:'wexmac', color:VC.WEXMAC,
+    contractors:[{name:'Amentum',vehicle:'WEXMAC 2.0',type:'Prime',role:'Bilateral exercise logistics — life support, transportation, fuel, lodging for Eager Lion exercise rotations',ceiling:'Included in WEXMAC scope',period:'Ongoing',status:'Active',color:FC['Amentum']}]
+  },
+
+  // ── INDOPACOM — LOGCAP V + WEXMAC ────────────────────────────────────────
+  // ── INDOPACOM — additional LOGCAP V sites (V2X prime) ─────────────────────
+  {
+    id:'indo-schofield', gcc:'indopacom',
+    name:'Schofield Barracks / Fort Shafter — Hawaii', site:'Schofield Barracks / Fort Shafter, Oahu, Hawaii', lat:21.50, lng:-158.07,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'V2X',vehicle:'LOGCAP V (INDOPACOM)',type:'Prime',role:'USARPAC and 25th Infantry Division life support — base ops, dining, facilities management, supply chain. INDOPACOM Task Order extended through June 2030. Hawaii hosts 45,528 US military personnel (Sep 2025).',ceiling:'LOGCAP V INDOPACOM (extended June 2030)',period:'Ongoing',status:'Active',color:FC['V2X']}]
+  },
+  {
+    id:'indo-kwajalein-logcap', gcc:'indopacom',
+    name:'Kwajalein Atoll — LOGCAP V Garrison Support', site:'US Army Garrison Kwajalein Atoll, Marshall Islands', lat:8.72, lng:167.73,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'V2X',vehicle:'LOGCAP V (INDOPACOM)',type:'Prime',role:'Full garrison support — life support for personnel and families; mission support to Ronald Reagan Ballistic Missile Defense Test Site; archaeological diving services and watercraft marine ops. Army.mil confirmed July 2024.',ceiling:'LOGCAP V INDOPACOM (extended June 2030)',period:'Ongoing',status:'Active',color:FC['V2X']}]
+  },
+  {
+    id:'indo-guam', gcc:'indopacom',
+    name:'Andersen AFB / Naval Base Guam', site:'Andersen AFB / Naval Base Guam, Guam', lat:13.58, lng:144.93,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'V2X',vehicle:'LOGCAP V (INDOPACOM)',type:'Prime',role:'INDOPACOM Pacific island chain life support — base ops, logistics, supply for Andersen AFB and Naval Base Guam. 6,986 US military personnel (Sep 2025). Strategic hub for Pacific deterrence.',ceiling:'LOGCAP V INDOPACOM (extended June 2030)',period:'Ongoing',status:'Active',color:FC['V2X']}]
+  },
+  {
+    id:'indo-aps-kor-jpn', gcc:'indopacom',
+    name:'APS-3/4 Korea-Japan — Army Prepositioned Stock', site:'Korea / Japan (multiple sites)', lat:36.50, lng:127.50,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'Amentum (LOGCAP V)',vehicle:'LOGCAP V APS (INDOPACOM)',type:'Prime',role:'Care of Supplies in Storage (COSIS) for Army Prepositioned Stock sets in Korea and Japan — equipment maintenance, readiness, and storage management. $63M task order awarded June 2024.',ceiling:'$63M (APS Korea/Japan TO — June 2024)',period:'2024–ongoing',status:'Active',color:'#f0a830'}]
+  },
+  {
+    id:'indo-yokosuka', gcc:'indopacom',
+    name:'Yokosuka / COMSUBPAC — Japan TO', site:'Fleet Activities Yokosuka, Japan', lat:35.28, lng:139.67,
+    type:'wexmac', color:VC.WEXMAC,
+    contractors:[{name:'Logistics Plus',vehicle:'WEXMAC 2.0',type:'Prime',role:'Ashore support — interpreter services, logistics coordination, transportation for COMSUBPAC / CTF-77 / MCMGRU7',ceiling:'Confirmed executed 2025',period:'2025',status:'Active',color:FC['Logistics Plus']}]
+  },
+  {
+    id:'indo-kadena', gcc:'indopacom',
+    name:'Kadena AB, Okinawa', site:'Kadena Air Base, Okinawa, Japan', lat:26.36, lng:127.77,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'V2X',vehicle:'LOGCAP V + WEXMAC 2.0',type:'Prime',role:'PACAF hub — life support, logistics, facilities; WEXMAC: Yama Sakura / Orient Shield exercise surge',ceiling:'LOGCAP V INDOPACOM (extended June 2030)',period:'Ongoing',status:'Active',color:FC['V2X']}]
+  },
+  {
+    id:'indo-humphreys', gcc:'indopacom',
+    name:'Camp Humphreys, Korea', site:'Camp Humphreys, Pyeongtaek, South Korea', lat:36.96, lng:127.03,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'V2X',vehicle:'LOGCAP V + WEXMAC 2.0',type:'Prime',role:'~36,000 personnel full life support — dining, lodging, facilities, utilities; WEXMAC: UFS/RSOI exercise surge',ceiling:'LOGCAP V Korea (active)',period:'Ongoing',status:'Active',color:FC['V2X']}]
+  },
+  {
+    id:'indo-clark', gcc:'indopacom',
+    name:'Clark / Magsaysay — EDCA Philippines', site:'Clark AB / Fort Magsaysay, Philippines', lat:15.18, lng:120.56,
+    type:'wexmac', color:VC.WEXMAC,
+    contractors:[{name:'V2X',vehicle:'WEXMAC 2.0',type:'Prime',role:'EDCA site logistics — base support augmentation, MRF-P bilateral exercise logistics, force protection',ceiling:'Philippines revenue 7x growth 2022',period:'Ongoing',status:'Active',color:FC['V2X']}]
+  },
+  {
+    id:'indo-darwin', gcc:'indopacom',
+    name:'Darwin MRF-D — Australia', site:'Darwin, Northern Territory, Australia', lat:-12.46, lng:130.84,
+    type:'wexmac', color:VC.WEXMAC,
+    contractors:[{name:'Constellis/Centerra',vehicle:'WEXMAC 2.0',type:'Prime',role:'MRF-D life support — billeting, dining, transportation, force protection, base ops for US Marine rotational force',ceiling:'Included in $700M seat',period:'Ongoing',status:'Active',color:FC['Constellis/Centerra']}]
+  },
+  {
+    id:'terr-3', gcc:'indopacom',
+    name:'Kwajalein — INDOPACOM Wargame Research', site:'Kwajalein Atoll, Marshall Islands', lat:8.72, lng:167.73,
+    type:'wexmac', color:VC.WEXMAC,
+    contractors:[{name:'Terrestris',vehicle:'U.S. Army INDOPACOM',type:'SDVOSB 8(a)',role:'Environmental security research & wargame development — sea level / base workforce human security analysis; research fellows deployed',ceiling:'Confirmed',period:'Ongoing',status:'Active',color:FC['Terrestris']}]
+  },
+
+  // ── AFRICOM — WEXMAC ─────────────────────────────────────────────────────
+  // ── AFRICOM — LOGCAP V (Fluor) + additional WEXMAC sites ──────────────────
+  {
+    id:'afr-simba', gcc:'africom',
+    name:'Camp Simba / Manda Bay — Kenya', site:'Camp Simba, Manda Bay, Lamu County, Kenya', lat:-2.31, lng:40.90,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'Fluor (LOGCAP V)',vehicle:'LOGCAP V (AFRICOM)',type:'Prime',role:'Base life support — LOGCAP responsibility per 405th AFSB site visit Sep 2024. Supports AFRICOM CT ops against al-Shabaab in Somalia. $71M US-Kenya runway expansion broke ground Jan 2026.',ceiling:'LOGCAP V AFRICOM TO',period:'Ongoing — Jan 2026 expansion',status:'Active',color:'#e8a030'}]
+  },
+  {
+    id:'afr-accra', gcc:'africom',
+    name:'CSL Accra — Ghana', site:'Cooperative Security Location, Accra, Ghana', lat:5.60, lng:-0.17,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'Fluor (LOGCAP V)',vehicle:'LOGCAP V (AFRICOM)',type:'Prime',role:'Cooperative Security Location life support — LOGCAP summit site visit confirmed active. West Africa staging hub for AFRICOM operations. Fluor LOGCAP AFRICOM TO403 confirmed Ghana in scope.',ceiling:'LOGCAP V AFRICOM TO',period:'Ongoing',status:'Active',color:'#e8a030'}]
+  },
+  {
+    id:'afr-mogadishu', gcc:'africom',
+    name:'Mogadishu — Somalia LOGCAP Support', site:'Mogadishu / Baledogle, Somalia', lat:2.01, lng:45.34,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'Fluor (LOGCAP V)',vehicle:'LOGCAP V (AFRICOM)',type:'Prime',role:'Forward logistics and life support for USSOCOM and AFRICOM CT advisory mission. 405th AFSB manages active services in Somalia. Fluor LOGCAP AFRICOM TO403 confirmed Somalia in scope.',ceiling:'LOGCAP V AFRICOM TO',period:'Ongoing',status:'Active',color:'#e8a030'}]
+  },
+  {
+    id:'afr-uganda', gcc:'africom',
+    name:'Uganda — LOGCAP Forward Support', site:'Entebbe / Kasenyi, Uganda', lat:0.05, lng:32.44,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'Fluor (LOGCAP V)',vehicle:'LOGCAP V (AFRICOM)',type:'Prime',role:'Forward logistics support — 405th AFSB manages active LOGCAP services and property in Uganda. Staging for East Africa CT operations.',ceiling:'LOGCAP V AFRICOM TO',period:'Ongoing',status:'Active',color:'#e8a030'}]
+  },
+  {
+    id:'afr-liberia', gcc:'africom',
+    name:'Liberia — LOGCAP Support', site:'Monrovia / Roberts Field, Liberia', lat:6.29, lng:-10.75,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'Fluor (LOGCAP V)',vehicle:'LOGCAP V (AFRICOM)',type:'Prime',role:'West Africa LOGCAP life support. Fluor LOGCAP AFRICOM TO403 confirmed Liberia in scope — security and logistics support for US personnel and installations.',ceiling:'LOGCAP V AFRICOM TO',period:'Ongoing',status:'Active',color:'#e8a030'}]
+  },
+  {
+    id:'afr-sudan', gcc:'africom',
+    name:'NEO Sudan — Humanitarian Evacuation', site:'Khartoum / Port Sudan, Sudan', lat:15.55, lng:32.53,
+    type:'wexmac', color:VC.WEXMAC,
+    contractors:[{name:'KVG / Bodwé-KVG',vehicle:'WEXMAC 1.0 → 2.0',type:'Prime',role:'NEO & humanitarian evacuation — rapid mobilization, personnel movement logistics, humanitarian aid delivery',ceiling:'Included in $37M WEXMAC 1.0',period:'Executed',status:'Active',color:FC['KVG / Bodwé-KVG']}]
+  },
+  {
+    id:'afr-rota', gcc:'africom',
+    name:'Op. Allies Refuge — Rota, Spain', site:'Naval Station Rota, Cádiz, Spain', lat:36.64, lng:-6.35,
+    type:'wexmac', color:VC.WEXMAC,
+    contractors:[{name:'KVG / Bodwé-KVG',vehicle:'WEXMAC 1.0',type:'Prime',role:'NEO staging — reception, staging, onward movement; cargo handling; life support for Afghanistan evacuees transiting Rota',ceiling:'Included in $37M WEXMAC 1.0',period:'Executed',status:'Active',color:FC['KVG / Bodwé-KVG']}]
+  },
+  {
+    id:'afr-sigonella', gcc:'africom',
+    name:'Op. Allies Refuge — Sicily, Italy', site:'Aviano AB / Sigonella NAS, Sicily', lat:37.40, lng:14.92,
+    type:'wexmac', color:VC.WEXMAC,
+    contractors:[{name:'KVG / Bodwé-KVG',vehicle:'WEXMAC 1.0',type:'Prime',role:'NEO staging — lodging, catering, transportation, medical support for Afghanistan evacuees in transit through Italy',ceiling:'Included in $37M WEXMAC 1.0',period:'Executed',status:'Active',color:FC['KVG / Bodwé-KVG']}]
+  },
+  {
+    id:'afr-lemonnier', gcc:'africom',
+    name:'Camp Lemonnier, Djibouti', site:'Camp Lemonnier, Djibouti', lat:11.55, lng:43.15,
+    type:'wexmac', color:VC.WEXMAC,
+    contractors:[{name:'Amentum',vehicle:'WEXMAC 2.0',type:'Prime',role:'CJTF-HOA contingency life support — billeting, dining, transportation; USASOC forward logistics; Somalia advisory supply',ceiling:'Included in $121M seat',period:'Ongoing',status:'Active',color:FC['Amentum']}]
+  },
+  {
+    id:'afr-first-to', gcc:'africom',
+    name:'WEXMAC — First Task Order (Jan 2025)', site:'Undisclosed AFRICOM location', lat:5.35, lng:36.17,
+    type:'wexmac', color:VC.WEXMAC,
+    contractors:[{name:'KVG / Bodwé-KVG',vehicle:'WEXMAC 2.0',type:'Prime',role:'First task order on WEXMAC 2.0 — January 2025; location undisclosed; logistics and expeditionary support per WEXMAC 2.0 PWS',ceiling:'First WEXMAC 2.0 TO',period:'Jan 2025',status:'Active',color:FC['KVG / Bodwé-KVG']}]
+  },
+
+  // ── SOUTHCOM — WEXMAC ────────────────────────────────────────────────────
+  // ── SOUTHCOM — LOGCAP V (Amentum prime) ───────────────────────────────────
+  {
+    id:'southcom-honduras-logcap', gcc:'southcom',
+    name:'Soto Cano AB — LOGCAP V Honduras', site:'Soto Cano Air Base, Honduras', lat:14.40, lng:-87.60,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'Amentum (LOGCAP V)',vehicle:'LOGCAP V (SOUTHCOM)',type:'Prime',role:'JTF-Bravo base operations and life support — the bulk of SOUTHCOM LOGCAP V activity. PAE transitioned Fluor in Honduras as LOGCAP V stood up; now Amentum-Parsons prime. Contingency planning, theater-setting, exercise support.',ceiling:'LOGCAP V SOUTHCOM TO',period:'Ongoing',status:'Active',color:'#f0a830'}]
+  },
+  {
+    id:'southcom-aps5', gcc:'southcom',
+    name:'APS-5 Kuwait (SOUTHCOM-linked) — Amentum', site:'Kuwait / Caribbean prepositioning sites', lat:25.50, lng:-80.20,
+    type:'logcap', color:VC.LOGCAP,
+    contractors:[{name:'Amentum (LOGCAP V)',vehicle:'LOGCAP V APS (SOUTHCOM)',type:'Prime',role:'Care of Supplies in Storage (COSIS) for APS-5 prepositioned stocks. $128.2M task order awarded June 2024. Caribbean / SOUTHCOM prepositioning.',ceiling:'$128.2M (APS-5 TO — June 2024)',period:'2024–ongoing',status:'Active',color:'#f0a830'}]
+  },
+  {
+    id:'south-0', gcc:'southcom',
+    name:'Soto Cano AB / JTF-Bravo — New Award', site:'Soto Cano Air Base, Honduras', lat:14.38, lng:-87.62,
+    type:'new', color:VC.NEW,
+    contractors:[{name:'Undisclosed',vehicle:'WEXMAC 2.0',type:'Undisclosed',role:'Base operations & life support — JTF-Bravo expeditionary logistics, exercise support, bilateral partner operations; counter-narcotics; HA/DR',ceiling:'Undisclosed',period:'New award',status:'Active',color:VC.NEW}]
+  },
+  {
+    id:'south-1', gcc:'southcom',
+    name:'Continuing Promise 2025 — Puerto Plata, DR', site:'Puerto Plata, Dominican Republic', lat:19.80, lng:-70.69,
+    type:'wexmac', color:VC.WEXMAC,
+    contractors:[{name:'Trailer Bridge',vehicle:'WEXMAC 2.0',type:'Prime',role:'HA/DR medical site — potable water, sanitation, expeditionary shelter, power generation, material handling, communications for USNS Comfort',ceiling:'Confirmed executed',period:'Aug 2025',status:'Active',color:FC['Trailer Bridge']}]
+  },
+  {
+    id:'terr-1', gcc:'southcom',
+    name:'Puno, Peru — USSOUTHCOM HA/DP', site:'Puno, Peru (high-altitude Andes)', lat:-15.84, lng:-70.02,
+    type:'wexmac', color:VC.WEXMAC,
+    contractors:[{name:'Terrestris',vehicle:'WEXMAC 2.0 / USSOUTHCOM',type:'SDVOSB 8(a)',role:'HA/DR logistics & training — EOC equipment (generators, forklifts, warehouse, UHF/VHF radio, videowall); 30+ INDECI personnel trained; Andes radio repeater deployment',ceiling:'Confirmed executed Nov 2025',period:'Nov 2025',status:'Active',color:FC['Terrestris']}]
+  },
+];
+
+// ── POPULATE HEADER STATS ──────────────────────────────────────────────────
+const wexmacCount = LOCS.filter(l=>l.type==='wexmac'||l.type==='new').length;
+const logcapCount = LOCS.filter(l=>l.type==='logcap').length;
+const eagleCount  = LOCS.filter(l=>l.type==='eagle'||l.type==='both').length;
+const recompCount = LOCS.filter(l=>l.type==='recomp').length;
+document.getElementById('cnt-wexmac').textContent = wexmacCount;
+document.getElementById('cnt-logcap').textContent = logcapCount;
+document.getElementById('cnt-eagle').textContent  = eagleCount;
+document.getElementById('cnt-recomp').textContent = recompCount;
+document.getElementById('cnt-total').textContent  = LOCS.length;
+
+let worldTopo=null, usTopo=null;
+
+// ── MARKER COLOR LOGIC ────────────────────────────────────────────────────
+function markerColor(loc){
+  if(loc.type==='recomp') return VC.RECOMP;
+  if(loc.type==='logcap') return VC.LOGCAP;
+  if(loc.type==='both')   return VC.BOTH;
+  if(loc.type==='eagle')  return VC.EAGLE;
+  if(loc.type==='wexmac') return VC.WEXMAC;
+  if(loc.type==='new')    return VC.NEW;
+  return '#aaa';
+}
+
+// ── TOOLTIP ────────────────────────────────────────────────────────────────
+function showTip(evt, loc, mapWrap){
+  const tip=mapWrap.querySelector('.tip');
+  const col=markerColor(loc);
+  const recompBanner=loc.recompete?`<div class="tip-recomp">⚠ Recompete — incumbent: ${loc.recompete.incumbent} · expires ${loc.recompete.expires}</div>`:'';
+  const typeBadge=loc.type==='wexmac'?'<div class="tip-conf">✓ Confirmed WEXMAC task order</div>':
+                  loc.type==='new'?'<div class="tip-conf" style="background:rgba(240,240,192,.08);border-color:rgba(240,240,192,.3);color:#f0f0c0">★ New/undisclosed award</div>':
+                  loc.type==='logcap'?'<div class="tip-conf" style="background:rgba(160,124,244,.08);border-color:rgba(160,124,244,.3);color:#a07cf4">◈ LOGCAP V + WEXMAC dual-vehicle</div>':'';
+  tip.innerHTML=`
+    <div class="tip-name" style="color:${col}">${loc.name}</div>
+    <div class="tip-sub">${loc.site}</div>
+    ${loc.contractors.map(c=>`<div class="tip-row"><div class="tip-dot" style="background:${c.color}"></div>
+      <span><strong style="color:${c.color}">${c.name}</strong> · ${c.vehicle} · <span style="color:var(--amber);font-weight:500">${c.ceiling}</span></span></div>`).join('')}
+    ${recompBanner}${typeBadge}`;
+  const wr=mapWrap.getBoundingClientRect();
+  let lx=evt.clientX-wr.left+12, ly=evt.clientY-wr.top-16;
+  if(lx+310>wr.width) lx=evt.clientX-wr.left-315;
+  if(ly+200>wr.height) ly=wr.height-205;
+  tip.style.bottom='auto'; tip.style.left=lx+'px'; tip.style.top=ly+'px';
+  tip.classList.add('show');
+}
+function hideTip(mapWrap){mapWrap.querySelector('.tip').classList.remove('show')}
+
+// ── DETAIL PANEL ───────────────────────────────────────────────────────────
+function showDetail(loc, mapWrap){
+  const det=mapWrap.querySelector('.detail');
+  const col=markerColor(loc);
+  const recompBanner=loc.recompete?`<div class="det-banner det-recomp">
+    <div class="det-banner-title">⚠ Recompete Opportunity</div>
+    <div class="det-banner-body"><strong>Incumbent:</strong> ${loc.recompete.incumbent}<br>
+    <strong>Ceiling:</strong> ${loc.recompete.ceiling} · expires ${loc.recompete.expires}<br><br>${loc.recompete.notes}</div></div>`:'';
+  const typeBanner=loc.type==='wexmac'?`<div class="det-banner det-confirmed"><div class="det-banner-title">✓ Confirmed WEXMAC Task Order</div><div class="det-banner-body">Source-cited confirmed contract performance at this location.</div></div>`:
+    loc.type==='logcap'?`<div class="det-banner det-logcap"><div class="det-banner-title">◈ LOGCAP V + WEXMAC 2.0 Dual-Vehicle</div><div class="det-banner-body">LOGCAP V standing base contract active. WEXMAC 2.0 supplements with exercise surge and short-fuse task orders.</div></div>`:
+    loc.type==='new'?`<div class="det-banner" style="background:rgba(240,240,192,.07);border:.5px solid rgba(240,240,192,.3)"><div class="det-banner-title" style="color:#f0f0c0">★ New Award — Firm & Value Undisclosed</div><div class="det-banner-body">New WEXMAC 2.0 contract. Awardee and value not publicly disclosed.</div></div>`:'';
+  const cRows=loc.contractors.map(c=>`
+    <div class="det-row">
+      <div class="det-cname" style="color:${c.color}">${c.name} <span style="font-family:var(--mono);font-size:11px;color:var(--muted)">[${c.type}]</span></div>
+      <div class="det-label" style="margin-top:4px">Vehicle</div><div class="det-value">${c.vehicle}</div>
+      <div class="det-label" style="margin-top:4px">Value / Ceiling</div><div class="det-value" style="color:var(--amber);font-weight:500">${c.ceiling}</div>
+      <div class="det-label" style="margin-top:4px">Scope / Role</div><div class="det-value">${c.role}</div>
+      <div class="det-label" style="margin-top:4px">Status</div><div class="det-value" style="color:${c.status==='Active'?'#22c55e':'#ff6b35'}">${c.status} · ${c.period}</div>
+    </div>`).join('');
+  det.querySelector('#det-body').innerHTML=`
+    <div class="det-name" style="color:${col}">${loc.name}</div>
+    <div class="det-meta">${loc.site} · ${loc.gcc.toUpperCase()}</div>
+    ${recompBanner}${typeBanner}
+    <div class="det-sec"><div class="det-sec-h">Contract Details</div>${cRows}</div>`;
+  det.classList.add('open');
+}
+
+// ── BUILD SECTION ──────────────────────────────────────────────────────────
+function buildSection(gcc){
+  const gccLocs=LOCS.filter(l=>l.gcc===gcc.id);
+  const sec=document.createElement('div');
+  sec.className='gcc-section'; sec.id=gcc.id;
+
+  const mapWrap=document.createElement('div'); mapWrap.className='map-wrap';
+  const svgNode=d3.create('svg').attr('width','100%').attr('height','100%').node();
+  mapWrap.appendChild(svgNode);
+
+  const loadEl=document.createElement('div'); loadEl.className='map-loading'; loadEl.textContent='Rendering…';
+  mapWrap.appendChild(loadEl);
+
+  const badge=document.createElement('div'); badge.className='map-badge';
+  badge.innerHTML=`<div class="mb-gcc" style="color:${gcc.color}">WEXMAC · LOGCAP V · EAGLE II BOA · ${gcc.short}</div><div class="mb-name" style="color:${gcc.color}">${gcc.short}</div><div class="mb-sub">${gcc.hq}</div>`;
+  mapWrap.appendChild(badge);
+
+  const zc=document.createElement('div'); zc.className='zoom-controls';
+  zc.innerHTML=`<div class="zoom-btn" data-action="in">+</div><div class="zoom-btn" data-action="out">−</div><div class="zoom-btn" data-action="reset" style="font-size:10px;font-family:monospace">⌂</div>`;
+  mapWrap.appendChild(zc);
+
+  const legend=document.createElement('div'); legend.className='map-legend';
+  legend.innerHTML=`
+    <div class="leg"><div class="leg-dot" style="background:${VC.WEXMAC}"></div>WEXMAC confirmed TO</div>
+    <div class="leg"><div class="leg-dot" style="background:${VC.LOGCAP}"></div>LOGCAP V (dual-vehicle)</div>
+    <div class="leg"><div class="leg-dot" style="background:${VC.EAGLE}"></div>EAGLE II BOA</div>
+    <div class="leg"><div class="leg-dot" style="background:${VC.BOTH}"></div>EAGLE + LOGCAP</div>
+    <div class="leg"><div class="leg-dot" style="background:${VC.RECOMP};border-radius:2px;transform:rotate(45deg)"></div>Recompete target</div>
+    <div class="leg"><div class="leg-dot" style="background:${VC.NEW}"></div>New/undisclosed award</div>`;
+  mapWrap.appendChild(legend);
+
+  const tip=document.createElement('div'); tip.className='tip'; mapWrap.appendChild(tip);
+  const det=document.createElement('div'); det.className='detail';
+  det.innerHTML=`<button class="det-close" onclick="this.closest('.detail').classList.remove('open')">✕</button><div id="det-body"></div>`;
+  mapWrap.appendChild(det);
+
+  // Sidebar
+  const wexCount=gccLocs.filter(l=>l.type==='wexmac'||l.type==='new').length;
+  const lcCount=gccLocs.filter(l=>l.type==='logcap').length;
+  const eaCount=gccLocs.filter(l=>l.type==='eagle'||l.type==='both').length;
+  const rcCount=gccLocs.filter(l=>l.type==='recomp').length;
+
+  const sidebar=document.createElement('div'); sidebar.className='sidebar';
+  sidebar.innerHTML=`
+    <div class="sb-head">
+      <div class="sb-gcc" style="color:${gcc.color}">${gcc.name}</div>
+      <div class="sb-title">WEXMAC · LOGCAP V · EAGLE II BOA</div>
+      <div class="sb-sub">one row = one discrete contract or installation</div>
+    </div>
+    ${gcc.id==='southcom'?`<a class="intel-link" href="#" onclick="showTab('intel');window.scrollTo(0,0);return false;" style="--gcc-color:${gcc.color}">SOUTHCOM AOR — Intelligence Brief</a>`:''}
+    <div class="sb-filters">
+      <div class="fg" style="min-width:130px"><div class="fl">Search</div>
+        <input type="text" class="sb-q" placeholder="Site, firm, role…"></div>
+      <div class="fg"><div class="fl">Vehicle</div>
+        <select class="sb-veh">
+          <option value="">All</option>
+          <option value="wexmac">WEXMAC</option>
+          <option value="logcap">LOGCAP V</option>
+          <option value="eagle">EAGLE II BOA</option>
+          <option value="both">EAGLE + LOGCAP</option>
+          <option value="recomp">Recompete</option>
+          <option value="new">New award</option>
+        </select></div>
+    </div>
+    <div class="sb-stats">
+      <div class="stat"><div class="stat-v" style="color:${VC.WEXMAC}">${wexCount}</div><div class="stat-l">WEXMAC</div></div>
+      <div class="stat"><div class="stat-v" style="color:${VC.LOGCAP}">${lcCount}</div><div class="stat-l">LOGCAP V</div></div>
+      <div class="stat"><div class="stat-v" style="color:${VC.EAGLE}">${eaCount}</div><div class="stat-l">EAGLE II</div></div>
+      <div class="stat"><div class="stat-v" style="color:${VC.RECOMP}">${rcCount}</div><div class="stat-l">Recompete</div></div>
+    </div>
+    <div class="sb-list" id="list-${gcc.id}"></div>`;
+
+  sec.appendChild(mapWrap);
+  sec.appendChild(sidebar);
+
+  // Render sidebar list
+  function renderList(){
+    const q=(sidebar.querySelector('.sb-q').value||'').toLowerCase();
+    const veh=sidebar.querySelector('.sb-veh').value;
+    let data=gccLocs.slice();
+    if(q) data=data.filter(l=>l.name.toLowerCase().includes(q)||l.site.toLowerCase().includes(q)||l.contractors.some(c=>c.name.toLowerCase().includes(q)||c.role.toLowerCase().includes(q)));
+    if(veh) data=data.filter(l=>l.type===veh);
+    const el=sidebar.querySelector('#list-'+gcc.id);
+    if(!data.length){el.innerHTML='<div class="no-results">No locations match</div>';return;}
+    el.innerHTML=data.map(loc=>{
+      const col=markerColor(loc);
+      const tagCls={wexmac:'t-wexmac',logcap:'t-logcap',eagle:'t-eagle',both:'t-eagle',recomp:'t-wexmac',new:'t-wexmac'}[loc.type]||'t-wexmac';
+      const tags=loc.contractors.map(c=>`<span class="tag ${tagCls}"><span class="tag-dot"></span>${c.name.split(' ')[0]}</span>`).join('');
+      const pills=(loc.type==='recomp'?`<span class="recomp-pill">⚠ Recompete ${loc.recompete?.expires||''}</span>`:'')+
+                  (loc.type==='wexmac'?`<span class="conf-pill">✓</span>`:'')+
+                  (loc.type==='new'?`<span class="new-pill">★ new</span>`:'');
+      return `<div class="loc-item" data-id="${loc.id}" style="--item-color:${col}">
+        <div class="li-name" style="color:${col}">${loc.name} ${pills}</div>
+        <div class="li-meta">${loc.site}</div>
+        <div class="li-tags">${tags}</div>
+      </div>`;
+    }).join('');
+    el.querySelectorAll('.loc-item').forEach(item=>{
+      item.addEventListener('click',()=>{
+        el.querySelectorAll('.loc-item').forEach(r=>r.classList.remove('active'));
+        item.classList.add('active');
+        const loc=LOCS.find(l=>l.id===item.dataset.id);
+        if(loc) showDetail(loc,mapWrap);
+      });
+    });
+  }
+  sidebar.querySelector('.sb-q').addEventListener('input',renderList);
+  sidebar.querySelector('.sb-veh').addEventListener('change',renderList);
+  renderList();
+
+  // Build map
+  let zoomBehavior,svgSel,gMap;
+
+  function initMap(){
+    const rect=mapWrap.getBoundingClientRect();
+    const W=rect.width>20?rect.width:Math.max(window.innerWidth-360,320);
+    const H=rect.height>20?rect.height:Math.max(window.innerHeight,500);
+    svgSel=d3.select(svgNode); svgSel.attr('width',W).attr('height',H);
+    const b=BOUNDS[gcc.id];
+    let proj;
+    if(gcc.usMap){
+      proj=d3.geoAlbersUsa().scale(W*1.1).translate([W/2,H/2]);
+    } else {
+      proj=d3.geoMercator().center([b.cx,b.cy]).scale(W/Math.PI*(b.scale/500)).translate([W/2,H/2]);
+    }
+    const pf=d3.geoPath().projection(proj);
+    gMap=svgSel.append('g');
+
+    loadEl.style.display='none';
+    if(gcc.usMap && usTopo){
+      const states=topojson.feature(usTopo,usTopo.objects.states);
+      const mesh=topojson.mesh(usTopo,usTopo.objects.states,(a,b)=>a!==b);
+      gMap.append('g').selectAll('path').data(states.features).join('path').attr('class','state-fill').attr('d',pf);
+      gMap.append('path').datum(mesh).attr('class','mesh').attr('d',pf);
+    } else if(!gcc.usMap && worldTopo){
+      const countries=topojson.feature(worldTopo,worldTopo.objects.countries);
+      gMap.insert('g',':first-child').selectAll('path').data(countries.features).join('path').attr('class','country-fill').attr('d',pf);
+    }
+
+    // Zoom
+    zoomBehavior=d3.zoom().scaleExtent([0.4,20]).on('zoom',evt=>{
+      const t=evt.transform;
+      gMap.attr('transform',t);
+      gMap.selectAll('.loc-g').each(function(){
+        const id=this.dataset.id;
+        const loc=LOCS.find(l=>l.id===id); if(!loc) return;
+        const pt=proj([loc.lng,loc.lat]); if(!pt) return;
+        const [mx,my]=pt;
+        d3.select(this).attr('transform','translate('+mx+','+my+') scale('+(1/t.k)+') translate('+(-mx)+','+(-my)+')');
+      });
+    });
+    svgSel.call(zoomBehavior);
+    svgSel.on('dblclick.zoom',null);
+
+    zc.querySelector('[data-action=in]').addEventListener('click',()=>svgSel.transition().duration(300).call(zoomBehavior.scaleBy,1.6));
+    zc.querySelector('[data-action=out]').addEventListener('click',()=>svgSel.transition().duration(300).call(zoomBehavior.scaleBy,0.625));
+    zc.querySelector('[data-action=reset]').addEventListener('click',()=>svgSel.transition().duration(500).call(zoomBehavior.transform,d3.zoomIdentity));
+
+    // Plot markers
+    gccLocs.forEach(loc=>{
+      const pt=proj([loc.lng,loc.lat]); if(!pt) return;
+      const [x,y]=pt;
+      const col=markerColor(loc);
+      const isRecomp=loc.type==='recomp';
+      const isLogcap=loc.type==='logcap';
+      const isNew=loc.type==='new';
+      const isEagle=loc.type==='eagle'||loc.type==='both';
+      const da1=(Math.random()*2).toFixed(2)+'s';
+      const da2=(Math.random()*1.5+0.7).toFixed(2)+'s';
+      const da3=(Math.random()*1.5+1.2).toFixed(2)+'s';
+
+      const g=gMap.append('g').attr('class','loc-g').attr('data-id',loc.id);
+
+      if(isNew){
+        g.append('circle').attr('class','ring-new').attr('cx',x).attr('cy',y).attr('r',6).attr('stroke',col);
+        g.append('circle').attr('cx',x).attr('cy',y).attr('r',5.5).attr('fill',col).attr('filter','drop-shadow(0 0 9px '+col+'cc)');
+      } else if(isRecomp){
+        g.append('circle').attr('class','ring-recomp').attr('cx',x).attr('cy',y).attr('r',8).attr('stroke',col).style('animation-delay',da1);
+        g.append('circle').attr('class','ring-recomp2').attr('cx',x).attr('cy',y).attr('r',8).attr('stroke',col).style('animation-delay',da2);
+        const s=8;
+        g.append('polygon').attr('points',`${x},${y-s} ${x+s},${y} ${x},${y+s} ${x-s},${y}`).attr('fill',col).attr('opacity',.9).attr('filter','drop-shadow(0 0 8px '+col+'99)');
+      } else if(isLogcap){
+        g.append('circle').attr('class','ring-lc1').attr('cx',x).attr('cy',y).attr('r',8).attr('stroke','#a07cf4').style('animation-delay',da1);
+        g.append('circle').attr('class','ring-lc2').attr('cx',x).attr('cy',y).attr('r',8).attr('stroke','#a07cf4').style('animation-delay',da2);
+        g.append('circle').attr('cx',x).attr('cy',y).attr('r',6).attr('fill',col).attr('stroke','#a07cf4').attr('stroke-width',2).attr('filter','drop-shadow(0 0 7px '+col+'bb)');
+      } else {
+        g.append('circle').attr('class','ring1').attr('cx',x).attr('cy',y).attr('r',6).attr('stroke',col).style('animation-delay',da1);
+        g.append('circle').attr('class','ring2').attr('cx',x).attr('cy',y).attr('r',6).attr('stroke',col).style('animation-delay',da2);
+        g.append('circle').attr('class','ring3').attr('cx',x).attr('cy',y).attr('r',6).attr('stroke',col).style('animation-delay',da3);
+        g.append('circle').attr('cx',x).attr('cy',y).attr('r',5.5).attr('fill',col).attr('filter','drop-shadow(0 0 7px '+col+'bb)');
+      }
+
+      g.append('text').attr('class','loc-label').attr('x',x+9).attr('y',y+4)
+        .text(loc.name.replace('Fort ','Ft ').replace('Continuing Promise 2025 — ','').slice(0,24));
+
+      g.on('click',()=>{
+        const list=sidebar.querySelector('#list-'+gcc.id); if(!list) return;
+        list.querySelectorAll('.loc-item').forEach(r=>r.classList.remove('active'));
+        const row=list.querySelector(`[data-id="${loc.id}"]`);
+        if(row){row.classList.add('active');row.scrollIntoView({behavior:'smooth',block:'nearest'});}
+        showDetail(loc,mapWrap);
+      });
+      g.on('mouseenter',e=>showTip(e,loc,mapWrap));
+      g.on('mouseleave',()=>hideTip(mapWrap));
+    });
+
+    window.addEventListener('resize',()=>{
+      const r=mapWrap.getBoundingClientRect();
+      const nW=r.width,nH=r.height;
+      svgSel.attr('width',nW).attr('height',nH);
+      let nProj;
+      if(gcc.usMap){nProj=d3.geoAlbersUsa().scale(nW*1.1).translate([nW/2,nH/2]);}
+      else{nProj=d3.geoMercator().center([b.cx,b.cy]).scale(nW/Math.PI*(b.scale/500)).translate([nW/2,nH/2]);}
+      const npf=d3.geoPath().projection(nProj);
+      gMap.selectAll('.country-fill,.state-fill').attr('d',npf);
+      gMap.selectAll('.mesh').attr('d',npf);
+      gMap.selectAll('.loc-g').each(function(){
+        const id=this.dataset.id; const loc=LOCS.find(l=>l.id===id); if(!loc) return;
+        const pt=nProj([loc.lng,loc.lat]); if(!pt) return;
+        const [x,y]=pt;
+        d3.select(this).selectAll('circle').attr('cx',x).attr('cy',y);
+        d3.select(this).selectAll('polygon').attr('points',`${x},${y-8} ${x+8},${y} ${x},${y+8} ${x-8},${y}`);
+        d3.select(this).selectAll('text').attr('x',x+9).attr('y',y+4);
+      });
+    });
+  }
+
+  let mapInited=false;
+  function tryInit(){
+    if(mapInited) return;
+    const r=mapWrap.getBoundingClientRect();
+    const W=r.width||mapWrap.offsetWidth;
+    const H=r.height||mapWrap.offsetHeight||window.innerHeight;
+    if(W>20&&H>20){mapInited=true;ro.disconnect();initMap();}
+  }
+  const ro=new ResizeObserver(tryInit);
+  ro.observe(mapWrap);
+  requestAnimationFrame(tryInit);
+  setTimeout(tryInit,100);
+  setTimeout(tryInit,400);
+
+  return sec;
+}
+
+// Scroll spy
+function setupScrollSpy(){
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        document.querySelectorAll('.nav-tab,.nav-gcc').forEach(l=>l.classList.remove('active'));
+        document.querySelectorAll(`.nav-tab[href="#${e.target.id}"],.nav-gcc[href="#${e.target.id}"]`).forEach(l=>l.classList.add('active'));
+      }
+    });
+  },{threshold:0.2});
+  GCCS.forEach(gcc=>{const el=document.getElementById(gcc.id);if(el) obs.observe(el);});
+}
+
+// Init
+const sectionsEl=document.getElementById('sections');
+GCCS.forEach(gcc=>sectionsEl.appendChild(buildSection(gcc)));
+setupScrollSpy();
+
+// Load basemaps async
+Promise.all([
+  d3.json('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json'),
+  d3.json('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json')
+]).then(([world,us])=>{
+  worldTopo=world; usTopo=us;
+  GCCS.forEach(gcc=>{
+    const sec=document.getElementById(gcc.id); if(!sec) return;
+    const svgEl=sec.querySelector('svg'); if(!svgEl) return;
+    const g=d3.select(svgEl).select('g'); if(g.empty()) return;
+    const W=svgEl.clientWidth||600, H=svgEl.clientHeight||500;
+    const b=BOUNDS[gcc.id];
+    if(gcc.usMap){
+      const proj=d3.geoAlbersUsa().scale(W*1.1).translate([W/2,H/2]);
+      const pf=d3.geoPath().projection(proj);
+      const states=topojson.feature(us,us.objects.states);
+      const mesh=topojson.mesh(us,us.objects.states,(a,b)=>a!==b);
+      g.insert('g',':first-child').selectAll('path').data(states.features).join('path').attr('class','state-fill').attr('d',pf);
+      g.insert('path',':first-child').datum(mesh).attr('class','mesh').attr('d',pf);
+    } else {
+      const proj=d3.geoMercator().center([b.cx,b.cy]).scale(W/Math.PI*(b.scale/500)).translate([W/2,H/2]);
+      const pf=d3.geoPath().projection(proj);
+      const countries=topojson.feature(world,world.objects.countries);
+      g.insert('g',':first-child').selectAll('path').data(countries.features).join('path').attr('class','country-fill').attr('d',pf);
+    }
+  });
+}).catch(()=>{});
+
+
+function showTab(t){
+  document.getElementById('panel-map').style.display   = t==='map'   ? 'block' : 'none';
+  document.getElementById('panel-intel').style.display = t==='intel' ? 'block' : 'none';
+  document.getElementById('tab-btn-map').classList.toggle('active-tab',   t==='map');
+  document.getElementById('tab-btn-intel').classList.toggle('active-tab', t==='intel');
+  if(t==='map') setTimeout(()=>window.dispatchEvent(new Event('resize')),50);
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  if(window.location.hash==='#intel') showTab('intel');
+});
+
+</script>
+</body>
+</html>
